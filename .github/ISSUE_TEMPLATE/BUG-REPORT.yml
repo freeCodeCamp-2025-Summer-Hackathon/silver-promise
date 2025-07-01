@@ -10,7 +10,7 @@ body:
     id: description
     attributes:
       label: What happened?
-      description: Please tell us what exactly happened and and what you expected to happened.
+      description: Please tell us what exactly happened and what you expected to happen.
     validations:
       required: true
   - type: textarea
