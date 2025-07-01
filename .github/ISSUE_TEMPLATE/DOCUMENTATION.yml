@@ -1,7 +1,7 @@
 name: Documentation
 description: "Something is not documented or unclear? Use this form."
 title: "[DOC]: "
-labels: "documentation"
+labels: ["documentation"]
 body: 
   - type: textarea
     attributes:
