@@ -4,9 +4,19 @@ Thank you for your interest in contributing! Please follow these guidelines to h
 
 ## How to Contribute
 
-- **Fork** the repository and create your branch from `main`.
+- **Fork** the repository and create your feature branch from `dev` with a meaningful, short name (e.g., `user-auth`, `fix-login-bug`, `docs`).
+- **Work** on your changes in your feature branch.
+- **Merge** your feature branch into the `dev` branch via pull request once your work is complete.
 - **Describe** your changes clearly in your pull request.
 - **Reference** any related issues in your PR description.
+
+### Branch Structure
+
+We follow a structured branching approach:
+
+- **`main`**: Production-ready code. Only stable, tested features are merged here.
+- **`dev`**: Development branch where feature branches are merged. Once multiple features work well together, `dev` is merged into `main`.
+- **Feature branches**: Individual branches for specific features or fixes, created from `dev`.
 
 ## Issues and Pull Requests
 
