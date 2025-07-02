@@ -2,6 +2,14 @@
 
 Thank you for your interest in contributing! Please follow these guidelines to help us maintain a high-quality project.
 
+## Tech Stack
+
+This project is built using:
+
+- **Frontend & Backend**: Next.js (Full-stack React framework)
+- **Database**: PostgreSQL
+- **Styling**: Tailwind CSS
+
 ## How to Contribute
 
 - **Fork** the repository and create your feature branch from `dev` with a meaningful, short name (e.g., `user-auth`, `fix-login-bug`, `docs`).
