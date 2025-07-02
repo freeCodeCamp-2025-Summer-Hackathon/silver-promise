@@ -1,0 +1,19 @@
+name: Feature Request
+description: "Suggest new ideas and features."
+title: "[FEAT]: "
+labels: ["enhancement"]
+body: 
+  - type: textarea
+    attributes:
+      label: Goal
+      description: Give a small description what the feature is for. A detailed description is needed later.
+  - type: textarea
+    attributes:
+      label: Tasks
+      description: Split the issue into multiple tasks to define all needed parts to fullfil the requirements.
+  - type: textarea
+    attributes:
+      label: Description
+      description: | 
+        Give a detailed description what the feature should do and how it should behave.
+        Include pictures or links if necessary.

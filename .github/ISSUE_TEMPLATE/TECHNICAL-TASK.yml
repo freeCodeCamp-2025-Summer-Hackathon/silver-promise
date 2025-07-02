@@ -1,0 +1,7 @@
+name: Technical Task
+description: "Anything like version updates, general tasks that don't necessarily have to be coded, etc."
+title: "[CHORE]: "
+body:
+  - type: textarea
+    attributes:
+      label: What needs to be done?
