@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "A simple poll app A simple poll app built with Next.js,Typescript, and Prisma",
+  title: "A simple poll app",
   description: "A simple poll app built with Next.js, TypeScript, and Prisma",
 };
 
