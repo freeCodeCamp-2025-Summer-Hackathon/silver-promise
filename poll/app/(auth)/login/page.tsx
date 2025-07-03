@@ -1,6 +1,6 @@
 "use client";
 
-import PrimaryButtonWithArrowRight from "@/app/ui-components/buttons/PrimaryButton";
+import { PrimaryButtonWithArrowRight } from "@/app/ui-components/buttons/PrimaryButton";
 import FloatingLabelInput from "@/app/ui-components/inputs/FloatingLabelInput";
 import Image from "next/image";
 import Link from "next/link";
