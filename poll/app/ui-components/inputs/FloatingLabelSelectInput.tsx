@@ -9,6 +9,31 @@ interface FloatingLabelSelectInputProps {
   onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
 }
 
+/**
+ * A floating label select input component for forms.
+ *
+ * Renders a styled `<select>` element with a floating label that animates
+ * when the select is focused or has a value. Useful for modern UI forms
+ * where labels should not overlap with user input.
+ *
+ * @param label - The label text to display for the select input.
+ * @param value - The current selected value of the select input.
+ * @param options - An array of option objects to display in the dropdown. Each option should have a `label` and `value`.
+ * @param onChange - Optional change handler called when the selected value changes.
+ *
+ * @example
+ * ```tsx
+ * <FloatingLabelSelectInput
+ *   label="Country"
+ *   value={selectedCountry}
+ *   options={[
+ *     { label: "USA", value: "us" },
+ *     { label: "Canada", value: "ca" }
+ *   ]}
+ *   onChange={handleCountryChange}
+ * />
+ * ```
+ */
 export default function FloatingLabelSelectInput({
   label,
   value,

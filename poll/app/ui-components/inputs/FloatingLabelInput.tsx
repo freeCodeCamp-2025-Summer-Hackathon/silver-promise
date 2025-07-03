@@ -12,13 +12,26 @@ interface FloatingLabelInputProps {
   required?: boolean;
 }
 
+/**
+ * A floating label input component for forms.
+ *
+ * Renders an input field with a label that floats above the input when focused or filled.
+ *
+ * @param label - The label text displayed for the input.
+ * @param value - The current value of the input.
+ * @param onChange - Callback fired when the input value changes.
+ * @param name - The name attribute for the input element.
+ * @param type - The type of the input (e.g., "text", "password"). Defaults to "text".
+ * @param required - Whether the input is required. Defaults to false.
+ *
+ * @returns A styled input component with a floating label.
+ */
 export default function FloatingLabelInput({
   label,
   value,
   onChange,
-  type = "text",
-  placeholder = "",
   name,
+  type = "text",
   required = false,
 }: FloatingLabelInputProps) {
   const [inputValue, setValue] = useState(value);
@@ -39,7 +52,6 @@ export default function FloatingLabelInput({
         name={name}
         id="floating_outlined"
         className="p-2.5 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 peer w-full"
-        placeholder={placeholder}
         required={required}
       />
       <label

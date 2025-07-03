@@ -9,6 +9,15 @@ interface PrimaryButtonProps {
   onClick?: () => void;
 }
 
+/**
+ * PrimaryButtonWithArrowRight renders a styled button with a label and a right-pointing arrow icon.
+ *
+ * @param label - The text to display inside the button.
+ * @param onClick - Optional click event handler for the button. Defaults to a no-op function.
+ * @param type - Optional button type attribute. Defaults to "button".
+ *
+ * The button uses a gradient background and displays an arrow icon on the right side of the label.
+ */
 export default function PrimaryButtonWithArrowRight({
     label,
     onClick = () => { },
