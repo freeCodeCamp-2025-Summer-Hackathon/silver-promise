@@ -2,6 +2,7 @@
 
 import { PrimaryButtonWithArrowRight } from "@/app/ui-components/buttons/PrimaryButton";
 import FloatingLabelInput from "@/app/ui-components/inputs/FloatingLabelInput";
+import FloatingLabelInputValidation from "@/app/ui-components/inputs/FloatingLabelInputValidation";
 import FloatingLabelSelectInput from "@/app/ui-components/inputs/FloatingLabelSelectInput";
 import { countries } from "@/lib/countries";
 import Image from "next/image";
@@ -27,14 +28,14 @@ export default function Register() {
       [name]: value,
     }));
 
-    if (name === "password" || name === "repeatPassword") {
+    if (name === "password" || name === "confirmPassword") {
       const password = name === "password" ? value : formData.password;
-      const repeatPassword =
-        name === "repeatPassword" ? value : formData.confirmPassword;
+      const confirmPassword =
+        name === "confirmPassword" ? value : formData.confirmPassword;
 
       setErrors((prev) => ({
         ...prev,
-        passwordMatch: password !== repeatPassword && repeatPassword !== "",
+        passwordMatch: password !== confirmPassword && confirmPassword !== "",
       }));
     }
   };
@@ -94,33 +95,15 @@ export default function Register() {
               value={formData.password}
               required
             />
-            {/* <FloatingLabelInput
+            <FloatingLabelInputValidation
+              type="password"
               label="Confirm Password"
               name="confirmPassword"
-              onChange={handleInputChange}
-              type="password"
-              value={formData.confirmPassword}
-              required
-            /> */}
-
-            {/* This will be made into a component later on */}
-            <input
-              type="password"
-              name="confirmPassword"
-              aria-label="Repeat Password"
-              placeholder="Repeat Password"
               value={formData.confirmPassword}
               onChange={handleInputChange}
-              className={`p-2 border rounded-2xl ${
-                errors.passwordMatch ? "border-red-500" : "border-gray-300"
-              }`}
-              required
+              errorMessage="Passwords do not match"
+              isInvalid={errors.passwordMatch}
             />
-            {errors.passwordMatch && (
-              <p className="text-red-500 text-sm -mt-3">
-                Passwords do not match
-              </p>
-            )}
             <PrimaryButtonWithArrowRight label="Register" type="submit" />
           </div>
         </form>
@@ -141,7 +124,7 @@ export default function Register() {
           alt="Login Page"
           width={750}
           height={750}
-          className="dark:invert-85"
+          className="dark:invert-85 h-auto"
         />
       </div>
     </div>
