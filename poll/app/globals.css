@@ -10,6 +10,10 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --color-soft-red: #E44F4F;
+  --color-soft-red-hover: #dd2323;
+  --color-dark-violet: #522989;
+  --color-dark-violet-hover: #3b1d62;
 }
 
 @media (prefers-color-scheme: dark) {
