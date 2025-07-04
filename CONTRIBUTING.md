@@ -10,6 +10,15 @@ This project is built using:
 - **Database**: PostgreSQL
 - **Styling**: Tailwind CSS
 
+## Prerequisites
+
+Before you begin, make sure you have the following installed:
+
+- [Node.js (LTS version recommended)](https://nodejs.org/)
+- [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/) (comes with Node.js)
+- [PostgreSQL](https://www.postgresql.org/) (for local database development)
+- [Git](https://git-scm.com/)
+
 ## How to Contribute
 
 - **Fork** the repository and create your feature branch from `dev` with a meaningful, short name (e.g., `user-auth`, `fix-login-bug`, `docs`).
@@ -31,43 +40,65 @@ We follow a structured branching approach:
 ### Setting Up Your Development Environment
 
 1. **Clone the repository:**
-   ```bash
-   git clone [[repo-url]](https://github.com/freeCodeCamp-2025-Summer-Hackathon/silver-promise.git)
-   cd silver-promise
-   ```
+    ```bash
+    git clone https://github.com/freeCodeCamp-2025-Summer-Hackathon/silver-promise.git
+    cd silver-promise
+    ```
 
 2. **Switch to the dev branch:**
-   ```bash
-   # Check if the dev branch exists
-   git branch -a
-   
-   # Switch to dev branch
-   git checkout dev
-   ```
+    ```bash
+    # Check if the dev branch exists
+    git branch -a
 
-3. **Create your feature branch from dev:**
-   ```bash
-   git checkout -b <my-feature>
-   ```
+    # Switch to dev branch
+    git checkout dev
+    ```
+
+3. **Install dependencies:**
+    ```bash
+    # Using npm
+    npm install
+
+    # Or using yarn
+    yarn install
+    ```
+
+4. **Set up environment variables:**
+    - Copy `.env.example` to `.env.local` and fill in the required values (such as your PostgreSQL connection string).
+
+5. **Start the development server:**
+    ```bash
+    # Using npm
+    npm run dev
+
+    # Or using yarn
+    yarn dev
+    ```
+    The app will be available at [http://localhost:3000](http://localhost:3000).
+
+6. **Create your feature branch from dev:**
+    ```bash
+    git checkout -b <my-feature>
+    ```
 
 ### Working on Your Feature
 
-4. **Work on your branch.** Once you're happy with the changes:
+7. **Work on your branch.** Once you're happy with the changes:
 
-5. **Add, commit, and push your code:**
-   ```bash
-   git add .
-   git commit -m "Your descriptive commit message" # Or 'git commit' then type your message in the editor, save and close the file
-   git push -u origin <my-feature>
-   ```
+8. **Add, commit, and push your code:**
+    ```bash
+    git add .
+    git commit -m "Your descriptive commit message"
+    git push -u origin <my-feature>
+    ```
 
-6. **Create a Pull Request (PR) to the dev branch**
+9. **Create a Pull Request (PR) to the dev branch**
 
-7. **At least one reviewer must approve your PR before merging**
+10. **At least one reviewer must approve your PR before merging**
 
-8. **Merge your PR into dev**
+11. **Merge your PR into dev**
 
-9. **(Optional) Delete your feature branch if no longer needed**
+12. **(Optional) Delete your feature branch if no longer needed**
 
 ### Keeping Your Branches Updated
 
@@ -126,7 +157,6 @@ We use labels to organize and prioritize issues and pull requests. Please use th
 - **question**: If you need further information or clarification.
 - **testing**: The issue or pull request is related to testing, such as unit tests, integration tests, etc.
 - **wontfix**: If the issue will not be worked on or is not fixable.
-
 
 ---
 Happy coding!
