@@ -1,14 +1,14 @@
 "use client";
 
 interface FloatingLabelInputValidationProps {
-  label: string;
-  value: string;
-  type: HTMLInputElement["type"];
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  isInvalid?: boolean;
-  errorMessage?: string;
-  name?: string;
-  required?: boolean;
+    label: string;
+    value: string;
+    type: HTMLInputElement["type"];
+    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    isInvalid?: boolean;
+    errorMessage?: string;
+    name?: string;
+    required?: boolean;
 }
 
 /**
@@ -29,49 +29,49 @@ interface FloatingLabelInputValidationProps {
  * @returns A React component rendering a floating label input with validation feedback.
  */
 export default function FloatingLabelInputValidation({
-  label,
-  value,
-  type = "text",
-  onChange,
-  errorMessage = "",
-  isInvalid = false,
-  name = "",
-  required = false,
+    label,
+    value,
+    type = "text",
+    onChange,
+    errorMessage = "",
+    isInvalid = false,
+    name = "",
+    required = false,
 }: FloatingLabelInputValidationProps) {
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    value = e.target.value;
-    if (onChange) {
-      onChange(e);
-    }
-  };
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        value = e.target.value;
+        if (onChange) {
+            onChange(e);
+        }
+    };
 
-  return (
-    <div className="relative">
-      <input
-        type={type}
-        value={value}
-        onChange={handleChange}
-        name={name}
-        placeholder=" "
-        id={name || "floating_outlined"}
-        className={`p-2.5 border rounded-2xl focus:outline-none focus:ring-2 transition duration-200 peer w-full ${
-          isInvalid
-            ? "border-red-500 focus:ring-red-500"
-            : "border-gray-300 focus:ring-blue-500"
-        }`}
-        required={required}
-      />
-      <label
-        htmlFor={name || "floating_outlined"}
-        className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-background px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1"
-      >
-        {label}
-      </label>
-      {isInvalid && (
-        <p className="text-red-500 text-sm -mt-3 translate-y-4">
-          {errorMessage}
-        </p>
-      )}
-    </div>
-  );
+    return (
+        <div className="relative">
+            <input
+                type={type}
+                value={value}
+                onChange={handleChange}
+                name={name}
+                placeholder=" "
+                id={name || "floating_outlined"}
+                className={`peer w-full rounded-2xl border p-2.5 transition duration-200 focus:outline-none focus:ring-2 ${
+                    isInvalid
+                        ? "border-red-500 focus:ring-red-500"
+                        : "border-gray-300 focus:ring-blue-500"
+                }`}
+                required={required}
+            />
+            <label
+                htmlFor={name || "floating_outlined"}
+                className="bg-background absolute start-1 top-2 z-10 origin-[0] -translate-y-4 scale-75 transform px-2 text-sm text-gray-500 duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:px-2 peer-focus:text-blue-600 rtl:peer-focus:left-auto rtl:peer-focus:translate-x-1/4 dark:text-gray-400 peer-focus:dark:text-blue-500"
+            >
+                {label}
+            </label>
+            {isInvalid && (
+                <p className="-mt-3 translate-y-4 text-sm text-red-500">
+                    {errorMessage}
+                </p>
+            )}
+        </div>
+    );
 }

@@ -4,9 +4,9 @@ import Image from "next/image";
 import { ButtonHTMLAttributes } from "react";
 
 interface PrimaryButtonProps {
-  label: string;
-  type: ButtonHTMLAttributes<HTMLButtonElement>["type"];
-  onClick?: () => void;
+    label: string;
+    type: ButtonHTMLAttributes<HTMLButtonElement>["type"];
+    onClick?: () => void;
 }
 
 /**
@@ -27,10 +27,7 @@ export function PrimaryButton({
         <button
             type={type}
             onClick={onClick}
-            className="
-                bg-gradient-to-r from-soft-red to-dark-violet 
-                text-white p-2 rounded-2xl hover:transition-colors
-                hover:bg-gradient-to-r hover:from-soft-red-hover hover:to-dark-violet-hover"
+            className="from-soft-red to-dark-violet hover:from-soft-red-hover hover:to-dark-violet-hover rounded-2xl bg-gradient-to-r p-2 text-white hover:bg-gradient-to-r hover:transition-colors"
         >
             {label}
         </button>
@@ -48,28 +45,25 @@ export function PrimaryButton({
  */
 export function PrimaryButtonWithArrowRight({
     label,
-    onClick = () => { },
+    onClick = () => {},
     type = "button",
 }: PrimaryButtonProps) {
-  return (
-    <button
-      type={type}
-      onClick={onClick}
-      className="
-              bg-gradient-to-r from-soft-red to-dark-violet 
-              text-white p-2 rounded-2xl hover:transition-colors
-              hover:bg-gradient-to-r hover:from-soft-red-hover hover:to-dark-violet-hover"
-    >
-      <div className="flex items-center px-2 justify-between">
-        <p>{label}</p>
-        <Image
-          src="/arrow-right.svg"
-          alt=""
-          width={30}
-          height={30}
-          className="invert"
-        />
-      </div>
-    </button>
-  );
+    return (
+        <button
+            type={type}
+            onClick={onClick}
+            className="from-soft-red to-dark-violet hover:from-soft-red-hover hover:to-dark-violet-hover rounded-2xl bg-gradient-to-r p-2 text-white hover:bg-gradient-to-r hover:transition-colors"
+        >
+            <div className="flex items-center justify-between px-2">
+                <p>{label}</p>
+                <Image
+                    src="/arrow-right.svg"
+                    alt=""
+                    width={30}
+                    height={30}
+                    className="invert"
+                />
+            </div>
+        </button>
+    );
 }
