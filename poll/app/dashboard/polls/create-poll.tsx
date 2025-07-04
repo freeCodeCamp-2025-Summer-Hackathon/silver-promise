@@ -69,7 +69,7 @@ export const CreatePoll = () => {
     setPollType(e.target.value);
   };
 
-  const handleAddSinglChoiceOption = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleAddSingleChoiceOption = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     const newId = `Option${singlechoiceOptions.length + 1}`;
     const newOption: PollOption = {
