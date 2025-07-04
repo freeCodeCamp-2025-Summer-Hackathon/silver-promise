@@ -1,0 +1,49 @@
+name: Bug Report
+description: File a bug report.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: Thank you for taking the time to fill out this bug report!
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Please tell us what exactly happened and what you expected to happen.
+    validations:
+      required: true
+  - type: textarea
+    id: steps-reproduce
+    attributes:
+      label: Steps to reproduce
+      description: Explain step by step what to do to reproduce this bug.
+      placeholder: |
+        1. First go to...
+        2. Then click on...
+        3. ...
+      render: bash
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: |
+        This part is for contributors and developers.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: In what area of the code does this bug occur?
+      options:
+        - api
+        - backend
+        - database
+        - frontend
+      multiple: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: What version of software are you running? Specify the commit hash
+      placeholder: (e.g. 4bebf38 or 4bebf38a9f225e5f1c4683734a746536b9da63ba)
+      

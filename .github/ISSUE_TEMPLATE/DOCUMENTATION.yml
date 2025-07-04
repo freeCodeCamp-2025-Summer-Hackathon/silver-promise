@@ -1,0 +1,13 @@
+name: Documentation
+description: "Something is not documented or unclear? Use this form."
+title: "[DOC]: "
+labels: ["documentation"]
+body: 
+  - type: textarea
+    attributes:
+      label: "What is unclear or missing?"
+      description: "Describe what is unclear or missing in the documentation."
+  - type: textarea
+    attributes:
+      label: "Improvements"
+      description: "Suggest an improvement to this part or the documentation."
