@@ -21,7 +21,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: poll
-        run: npm ci
+        run: npm install
 
       - name: Run ESLint
         id: eslint-step
