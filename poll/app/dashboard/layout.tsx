@@ -12,13 +12,12 @@ export default function DashboardLayout({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-  return (
-    <div className="flex">
-      <section className="">
-        <SideNavbar />
-      </section>
-      {children}
-    </div>
-  );
-
+    return (
+        <div className="flex">
+            <section className="">
+                <SideNavbar />
+            </section>
+            {children}
+        </div>
+    );
 }

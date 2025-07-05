@@ -8,11 +8,9 @@ export const metadata = {
 export const dynamic = "force-dynamic"; // This ensures the page is always rendered on the server
 
 export default function PollsDashboard() {
-
-  return (
-    <section className="w-full ">
-      <CreatePoll />
-    </section>
-  );
-
+    return (
+        <section className="w-full">
+            <CreatePoll />
+        </section>
+    );
 }

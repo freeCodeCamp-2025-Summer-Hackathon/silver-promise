@@ -1,3 +1,3 @@
 export default function PollResult() {
-  return <section>Poll result</section>;
+    return <section>Poll result</section>;
 }
