@@ -63,17 +63,7 @@ export default function LoginPage() {
           <button className="border text-foreground p-2 rounded-2xl transition-colors w-sm">
             Google
           </button>
+    
         </div>
-      </div>
-      <div className="w-2/3 flex items-center justify-center">
-        <Image
-          src="/ballot-box.svg"
-          alt="Login Page"
-          width={750}
-          height={750}
-          className="dark:invert-85"
-        />
-      </div>
-    </div>
-  );
+    );
 }

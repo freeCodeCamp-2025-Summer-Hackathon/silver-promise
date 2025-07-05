@@ -115,4 +115,5 @@ export default function DashboardHome() {
       </section>
     </section>
   );
+
 }

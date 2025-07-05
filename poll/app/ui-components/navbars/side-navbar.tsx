@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 export const SideNavbar = () => {
+
   const pathname = usePathname();
   const navLinks = [
     { name: "Dashboard", href: "/dashboard" },
@@ -56,4 +57,5 @@ export const SideNavbar = () => {
       </section>
     </nav>
   );
+
 };

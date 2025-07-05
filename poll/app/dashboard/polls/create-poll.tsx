@@ -214,6 +214,7 @@ export const CreatePoll = () => {
       </section>
     </section>
   );
+
 };
 export const metadata = {
   title: "Create Poll",

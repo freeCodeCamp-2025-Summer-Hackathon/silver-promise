@@ -1,0 +1,73 @@
+name: ESLint
+on: [pull_request]
+permissions:
+  contents: write
+  pull-requests: write
+jobs:
+  eslint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        working-directory: poll
+        run: npm install
+
+      - name: Run ESLint
+        id: eslint-step
+        working-directory: poll
+        run: |
+          npx next lint --fix 2>&1 | tee full-eslint-report.txt
+
+          awk '/^\.\// || /^[0-9]+:[0-9]+/ || /^$/' full-eslint-report.txt > eslint-report.txt
+
+          if [[ ! -s eslint-report.txt ]]; then echo "" > eslint-report.txt; fi
+
+          {
+            echo "ESLINT_REPORT<<EOF"
+            cat eslint-report.txt
+            echo "EOF"
+          } >> $GITHUB_ENV
+
+          rm -f full-eslint-report.txt eslint-report.txt
+        continue-on-error: true
+
+      - name: Commit and push fixable issues
+        run: |
+          if [[ -n "$(git status --porcelain)" ]]; then
+            git config user.name "ESLint - GitHub Action"
+            git config user.email "actions@github.com"
+            git add .
+            git commit -m "style: auto-format code with ESLint"
+            git push
+          fi
+
+      - name: Comment on Pull Request
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const report = (process.env.ESLINT_REPORT).trim() || 'No ESLint issues found.';
+            if(report == 'No ESLint issues found.') {
+              console.log('No ESLint issues found, skipping comment.');
+              return;
+            }
+            const prNumber = context.payload.pull_request.number;
+            const body = `### ESLint Report\n\`\`\`powershell\n${report}\n\`\`\``;
+            await github.rest.issues.createComment({
+                ...context.repo,
+                issue_number: prNumber,
+                body: body
+            });
+        env:
+          ESLINT_REPORT: ${{ env.ESLINT_REPORT }}

@@ -3,12 +3,12 @@
 import React, { HTMLInputTypeAttribute } from "react";
 
 interface FloatingLabelInputProps {
-  label: string;
-  value: string;
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  type?: HTMLInputTypeAttribute | undefined;
-  name?: string;
-  required?: boolean;
+    label: string;
+    value: string;
+    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    type?: HTMLInputTypeAttribute | undefined;
+    name?: string;
+    required?: boolean;
 }
 
 /**
@@ -24,31 +24,31 @@ interface FloatingLabelInputProps {
  * @returns A styled input field with a floating label.
  */
 export default function FloatingLabelInput({
-  label,
-  value,
-  onChange,
-  name,
-  type = "text",
-  required = false,
+    label,
+    value,
+    onChange,
+    name,
+    type = "text",
+    required = false,
 }: FloatingLabelInputProps) {
-  return (
-    <div className="relative">
-      <input
-        type={type}
-        value={value}
-        onChange={onChange}
-        name={name}
-        id={name || "floating_outlined"}
-        placeholder=" "
-        className="p-2.5 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 peer w-full"
-        required={required}
-      />
-      <label
-        htmlFor={name || "floating_outlined"}
-        className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-background px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1"
-      >
-        {label}
-      </label>
-    </div>
-  );
+    return (
+        <div className="relative">
+            <input
+                type={type}
+                value={value}
+                onChange={onChange}
+                name={name}
+                id={name || "floating_outlined"}
+                placeholder=" "
+                className="peer w-full rounded-2xl border border-gray-300 p-2.5 transition duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required={required}
+            />
+            <label
+                htmlFor={name || "floating_outlined"}
+                className="bg-background absolute start-1 top-2 z-10 origin-[0] -translate-y-4 scale-75 transform px-2 text-sm text-gray-500 duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:px-2 peer-focus:text-blue-600 rtl:peer-focus:left-auto rtl:peer-focus:translate-x-1/4 dark:text-gray-400 peer-focus:dark:text-blue-500"
+            >
+                {label}
+            </label>
+        </div>
+    );
 }
