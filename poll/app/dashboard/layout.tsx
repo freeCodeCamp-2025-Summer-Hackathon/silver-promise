@@ -4,29 +4,29 @@ import "../globals.css";
 import { SideNavbar } from "../ui-components/navbars/side-navbar";
 
 const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+    variable: "--font-geist-sans",
+    subsets: ["latin"],
 });
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+    variable: "--font-geist-mono",
+    subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "A simple poll app",
-  description: "A simple poll app built with Next.js,Typescript, and Prisma",
+    title: "A simple poll app",
+    description: "A simple poll app built with Next.js,Typescript, and Prisma",
 };
 
 export default function DashboardLayout({
-  children,
+    children,
 }: Readonly<{
-  children: React.ReactNode;
+    children: React.ReactNode;
 }>) {
-  return (
-    <div className="flex">
-      <SideNavbar />
-      {children}
-    </div>
-  );
+    return (
+        <div className="flex">
+            <SideNavbar />
+            {children}
+        </div>
+    );
 }
