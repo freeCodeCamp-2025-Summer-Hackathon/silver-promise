@@ -14,6 +14,7 @@
     --color-soft-red-hover: #dd2323;
     --color-dark-violet: #522989;
     --color-dark-violet-hover: #3b1d62;
+    --color-dark-gray: #7b7b7b;
 }
 
 @media (prefers-color-scheme: dark) {

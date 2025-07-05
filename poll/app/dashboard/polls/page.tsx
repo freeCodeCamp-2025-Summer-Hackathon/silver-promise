@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic"; // This ensures the page is always rende
 
 export default function PollsDashboard() {
     return (
-        <section>
+        <section className="w-full">
             <CreatePoll />
         </section>
     );

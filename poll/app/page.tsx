@@ -1,10 +1,9 @@
-import Image from "next/image";
-import Dashboard from "./dashboard/page";
+import LoginPage from "./(auth)/login/page";
 
 export default function Home() {
     return (
         <section>
-            <Dashboard />
+            <LoginPage />
         </section>
     );
 }
