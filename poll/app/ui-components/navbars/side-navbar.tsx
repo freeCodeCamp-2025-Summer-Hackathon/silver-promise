@@ -8,6 +8,7 @@ export const SideNavbar = () => {
     const navLinks = [
         { name: "Dashboard", href: "/dashboard" },
         { name: "Polls", href: "/dashboard/polls" },
+        { name: "History", href: "/dashboard/history" },
         { name: "Settings", href: "/dashboard/settings" },
     ];
     return (
@@ -18,10 +19,10 @@ export const SideNavbar = () => {
                 </div>
 
                 <button className="flex w-fit items-center gap-2 rounded-xl bg-white px-4 py-2">
-                    <span className="h-5 w-5">
+                    <span className="h-5 w-5 text-[#D84C54]">
                         <PlusIcon />
                     </span>
-                    <p className="font-bold text-black">Create Poll</p>
+                    <p className="font-bold text-[#D84C54]">Create Poll</p>
                 </button>
                 <ul className="flex w-full flex-col gap-4 font-bold">
                     {navLinks.map((link) => {
