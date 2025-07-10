@@ -122,7 +122,7 @@ export const PollList = ({
                                 <EditIcon />
                             </button>
                             <Link
-                                href={`/dashboard/polls/votes/${poll.poll_title.trim()}`}
+                                href={`/dashboard/polls/votes/${encodeURIComponent(poll.poll_title.trim())}`}
                                 className="block h-5 w-5"
                                 type="button"
                             >
