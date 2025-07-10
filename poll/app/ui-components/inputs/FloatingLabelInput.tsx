@@ -30,6 +30,7 @@ export default function FloatingLabelInput({
     name,
     type = "text",
     required = false,
+    ...props
 }: FloatingLabelInputProps) {
     return (
         <div className="relative">
@@ -42,6 +43,7 @@ export default function FloatingLabelInput({
                 placeholder=" "
                 className="peer w-full rounded-2xl border border-gray-300 p-2.5 transition duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required={required}
+                {...props}
             />
             <label
                 htmlFor={name || "floating_outlined"}

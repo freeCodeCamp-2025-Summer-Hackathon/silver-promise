@@ -3,6 +3,8 @@
 import { EditIcon } from "@/public/svgs/edit";
 import { DeleteIcon } from "@/public/svgs/delete";
 import { ShareIcon } from "@/public/svgs/share";
+// import { toast } from "react-toastify";
+import Link from "next/link";
 
 interface pollData {
     poll_title: string;
@@ -20,9 +22,35 @@ interface pollOption {
 
 interface PollListProps {
     allPolls: pollData[];
+    setAllPolls: (polls: pollData[]) => void;
+    handleEditCreatedPoll: (index: number) => void;
 }
 
-export const PollList: React.FC<PollListProps> = ({ allPolls }) => {
+export const PollList = ({
+    allPolls,
+    setAllPolls,
+    handleEditCreatedPoll,
+}: PollListProps) => {
+    const handleDeletePoll = (index: number) => {
+        const isConfirmed = window.confirm(
+            "Are you sure you want to delete this poll?"
+        );
+        if (isConfirmed) {
+            const updatedPollList = allPolls.filter((_, idx) => idx !== index);
+            setAllPolls(updatedPollList);
+
+            // update localStorage with the new list of polls
+            localStorage.setItem(
+                "createpolldata",
+                JSON.stringify(updatedPollList)
+            );
+        }
+    };
+
+    const handleEditClick = (index: number) => {
+        handleEditCreatedPoll(index);
+    };
+
     return (
         <div>
             <h2 className="text-dark-gray mb-4 font-bold">Polls</h2>
@@ -87,16 +115,27 @@ export const PollList: React.FC<PollListProps> = ({ allPolls }) => {
                     <div className="text-dark-gray mt-6 flex items-center justify-between text-xs">
                         <div>3hrs ago</div>
                         <div className="flex items-center gap-4">
-                            <span className="h-5 w-5">
+                            <button
+                                className="h-5 w-5"
+                                onClick={() => handleEditClick(index)}
+                            >
                                 <EditIcon />
-                            </span>
-                            <span className="block h-5 w-5">
+                            </button>
+                            <Link
+                                href={`/dashboard/polls/votes/${poll.poll_title.trim()}`}
+                                className="block h-5 w-5"
+                                type="button"
+                            >
                                 <ShareIcon />
-                            </span>
-                            <span className="block h-5 w-5">
+                            </Link>
+                            <button
+                                className="block h-5 w-5"
+                                type="button"
+                                onClick={() => handleDeletePoll(index)}
+                            >
                                 {" "}
                                 <DeleteIcon />
-                            </span>
+                            </button>
                         </div>
                     </div>
                 </details>

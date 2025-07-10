@@ -27,8 +27,10 @@ interface CreatePollFormProps {
     multichoiceOptions: pollOption[];
     editingOptionId: string | null;
     editedValue: string;
+    isEditing?: boolean;
     createPollValues: pollData;
     editRef: React.RefObject<HTMLDivElement | null>;
+    handleCloseEditModal?: () => void;
     handleCreatePollValueChange: (
         e: React.ChangeEvent<HTMLInputElement>
     ) => void;
@@ -44,6 +46,7 @@ interface CreatePollFormProps {
         e: React.MouseEvent<HTMLButtonElement>
     ) => void;
     handleCreatePoll: (e: FormEvent<HTMLButtonElement>) => void;
+    handleUpdatePoll?: (e: FormEvent<HTMLButtonElement>) => void;
 }
 
 const pollTypes = [
@@ -58,9 +61,11 @@ export const CreatePollForm: React.FC<CreatePollFormProps> = ({
     multichoiceOptions,
     editingOptionId,
     editedValue,
+    isEditing,
     createPollValues,
     editRef,
     handleCreatePollValueChange,
+    handleCloseEditModal,
     handleSelectPollType,
     handleInputChange,
     handleUpdateAndExitEditMode,
@@ -69,6 +74,7 @@ export const CreatePollForm: React.FC<CreatePollFormProps> = ({
     handleAddSingleChoiceOption,
     handleAddMultiChoiceOption,
     handleCreatePoll,
+    handleUpdatePoll,
 }) => {
     return (
         <form>
@@ -274,22 +280,41 @@ export const CreatePollForm: React.FC<CreatePollFormProps> = ({
                             <div className="text-dark-gray text-sm">
                                 <textarea
                                     className="w-full rounded-xl border border-[#e1e1e1] p-4"
-                                    rows={3}
+                                    rows={2}
                                     cols={10}
-                                    placeholder="Briefly tell us about your option"
+                                    name="value"
+                                    placeholder="Short answer"
                                 ></textarea>
                             </div>
                         )}
                     </div>
                 </div>
             </fieldset>
-            <div className="mt-6 w-full">
-                <PrimaryButtonWithArrowRight
-                    label="Submit"
-                    type="submit"
-                    onClick={handleCreatePoll}
-                />
-            </div>
+
+            {isEditing ? (
+                <div className="mt-6 flex w-full gap-12">
+                    <PrimaryButtonWithArrowRight
+                        label="Update"
+                        type="submit"
+                        onClick={handleUpdatePoll}
+                    />
+                    <button
+                        type="button"
+                        onClick={handleCloseEditModal}
+                        className="w-full cursor-pointer rounded-2xl border-2 border-slate-300 p-2 text-slate-400"
+                    >
+                        Cancel
+                    </button>
+                </div>
+            ) : (
+                <div className="mt-6 w-full">
+                    <PrimaryButtonWithArrowRight
+                        label="Submit"
+                        type="submit"
+                        onClick={handleCreatePoll}
+                    />
+                </div>
+            )}
         </form>
     );
 };

@@ -12,7 +12,7 @@ export const SideNavbar = () => {
         { name: "Settings", href: "/dashboard/settings" },
     ];
     return (
-        <nav className="bg-linear-to-b flex min-h-screen w-64 flex-col justify-between bg-gray-800 from-[#E04E51] to-[#552988] p-4 text-white">
+        <nav className="bg-linear-to-b flex h-full w-64 flex-col justify-between bg-gray-800 from-[#E04E51] to-[#552988] p-4 text-white">
             <section className="flex flex-col gap-6">
                 <div className="">
                     <h1 className="text-xl font-bold">Poll App</h1>

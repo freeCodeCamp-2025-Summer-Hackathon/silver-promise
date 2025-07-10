@@ -13,11 +13,11 @@ export default function DashboardLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <div className="flex">
-            <section className="">
+        <div className="relative flex">
+            <section className="fixed top-0 z-10 h-full">
                 <SideNavbar />
             </section>
-            {children}
+            <section className="ml-64 w-full">{children}</section>
         </div>
     );
 }
