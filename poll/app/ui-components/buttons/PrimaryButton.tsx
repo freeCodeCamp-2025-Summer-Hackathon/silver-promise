@@ -6,7 +6,8 @@ import { ButtonHTMLAttributes } from "react";
 interface PrimaryButtonProps {
     label: string;
     type: ButtonHTMLAttributes<HTMLButtonElement>["type"];
-    onClick?: () => void;
+    onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+    onSubmit?: (e: React.FormEvent<HTMLButtonElement>) => void;
 }
 
 /**
@@ -47,12 +48,14 @@ export function PrimaryButtonWithArrowRight({
     label,
     onClick = () => {},
     type = "button",
+    onSubmit = () => {},
 }: PrimaryButtonProps) {
     return (
         <button
             type={type}
             onClick={onClick}
-            className="from-soft-red to-dark-violet hover:from-soft-red-hover hover:to-dark-violet-hover rounded-2xl bg-gradient-to-r p-2 text-white hover:bg-gradient-to-r hover:transition-colors"
+            onSubmit={onSubmit}
+            className="from-soft-red to-dark-violet hover:from-soft-red-hover hover:to-dark-violet-hover w-full cursor-pointer rounded-2xl bg-gradient-to-r p-2 text-white hover:bg-gradient-to-r hover:transition-colors"
         >
             <div className="flex items-center justify-between px-2">
                 <p>{label}</p>

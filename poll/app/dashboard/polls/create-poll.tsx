@@ -1,23 +1,13 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
-import FloatingLabelInput from "@/app/ui-components/inputs/FloatingLabelInput";
-import FloatingLabelSelectInput from "@/app/ui-components/inputs/FloatingLabelSelectInput";
-
-const pollTypes = [
-    { value: "single-choice", label: "Single Choice" },
-    { value: "multiple-choice", label: "Multiple Choice" },
-    { value: "open-ended", label: "Open Ended" },
-];
-
-interface PollOption {
-    id: string;
-    label: string;
-    value: string;
-}
+import { useState, useRef, useEffect, useCallback, FormEvent } from "react";
+import { CreatePollForm } from "@/app/ui-components/forms/create-poll-form";
+import { PollList } from "@/app/ui-components/cards/poll-list";
+import { mockApi } from "@/lib/mockapi";
+import { PollData, PollOption, PollTypes } from "@/lib/types/polltypes";
 
 // Custom hook to handle clicks outside a specified element
-const useOnClickOutside = <T extends Node = Node>(
+const useOnClickOutside = <T extends HTMLElement = HTMLElement>(
     ref: React.RefObject<T>,
     handler: (event: MouseEvent | TouchEvent) => void
 ) => {
@@ -39,38 +29,127 @@ const useOnClickOutside = <T extends Node = Node>(
 };
 
 export const CreatePoll = () => {
-    const [pollType, setPollType] = useState("");
+    const [pollTypeValue, setPollTypeValue] = useState("");
+
+    //sets state for single choice options
     const [singlechoiceOptions, setSingleChoiceOptions] = useState<
         PollOption[]
     >([{ id: "Option1", label: "Option 1", value: "Option 1" }]);
+
+    //sets state for multi choice options
+    const [multichoiceOptions, setMultiChoiceOptions] = useState<PollOption[]>([
+        { id: "choice1", label: "Choice 1", value: "Choice 1" },
+    ]);
+
+    //sets state for open choice options
+    const [openChoiceOptions] = useState<PollOption[]>([
+        { id: "shortAnswer1", label: "shortAnswer 1", value: "shortAnswer 1" },
+    ]);
+
+    //sets the id when the user clicks on the edit Icon button in the
+    //single or multichoice options
     const [editingOptionId, setEditingOptionId] = useState<string | null>(null);
+
+    //sets the value of the edited option when the user clicks
+    //on the edit icon button for the single or multichoice option
     const [editedValue, setEditedValue] = useState<string>("");
+
+    //sets a reference to the dialog element that is later
+    //called with other methods (we are going to make it reusable)
+    const isUpdateModalOpenref = useRef<HTMLDialogElement | null>(null);
+
     const editRef = useRef<HTMLDivElement | null>(null);
 
+    //sets the state to the current poll data that is about to be updated
+    const [updatingPollData, setUpdatingPollData] = useState<PollData | null>(
+        null
+    );
+
+    //sets the state of the previous polltype
+    const [editingPollType, setEditingPollType] = useState("");
+
+    //helps to track if the component is in edit mode or not
+    const [isEditing, setIsEditing] = useState(false);
+
+    //init the all the values needed to create a poll
+    const [createPollValues, setCreatePollValues] = useState<PollData>({
+        pollTitle: "",
+        pollDescription: "",
+        pollType: "",
+        pollOptions: [],
+        pollQuestion: "",
+    });
+
+    //a state to track the submitted values on each poll
+    const [submittedPoll, setSubmittedPoll] = useState<PollData | null>(null);
+
+    //adds all the polls to an array object
+    //it's like an array of all submitted polls
+    //this helps us to manage a list of all submitted polls
+    const [allPolls, setAllPolls] = useState<PollData[]>([]);
+
+    //useeffect to retrieve the stored createpolldata after the component renders
+    useEffect(() => {
+        const fetchPolls = async () => {
+            const polls = await mockApi.getPolls();
+            setAllPolls(polls);
+        };
+        fetchPolls();
+    }, [submittedPoll]);
+
+    /**
+     * handles updating an option label/value when in edit mode and exits edit mode afterward.
+     * if editingOptionId exists and editedValue is not empty:
+     * Determines the poll type (single-choice or multiple-choice)
+     * updates the corresponding option in the list by matching its ID
+     * after update, resets editing state (editingOptionId and editedValue)
+     */
     const handleUpdateAndExitEditMode = useCallback(() => {
-        if (editingOptionId) {
-            const valueToSet = editedValue.trim();
-            if (valueToSet) {
-                setSingleChoiceOptions((prev) =>
+        const valueToSet = editedValue.trim();
+
+        if (editingOptionId || valueToSet) {
+            //a state setter function that updates the value and label
+            const updateOptions = (
+                setter: React.Dispatch<React.SetStateAction<PollOption[]>>
+            ) => {
+                setter((prev) =>
                     prev.map((opt) =>
                         opt.id === editingOptionId
                             ? { ...opt, label: valueToSet, value: valueToSet }
                             : opt
                     )
                 );
+            };
+
+            const type = isEditing ? editingPollType : pollTypeValue;
+
+            if (type === PollTypes.SINGLECHOICE) {
+                updateOptions(setSingleChoiceOptions);
+            } else if (type === PollTypes.MULTICHOICE) {
+                updateOptions(setMultiChoiceOptions);
             }
         }
         setEditingOptionId(null);
         setEditedValue("");
-    }, [editingOptionId, editedValue]);
+    }, [
+        editingOptionId,
+        editedValue,
+        pollTypeValue,
+        editingPollType,
+        isEditing,
+    ]);
 
     //@ts-expect-error Type 'HTMLDivElement | null' is not assignable to type 'Node'
     useOnClickOutside(editRef, handleUpdateAndExitEditMode);
 
+    //we use this to select poll type from dropdown
     const handleSelectPollType = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setPollType(e.target.value);
+        setPollTypeValue(e.target.value);
     };
 
+    //this function handles adding single choice options
+    //when user clicks the add button after selecting
+    //single choice from the dropdown
     const handleAddSingleChoiceOption = (
         e: React.MouseEvent<HTMLButtonElement>
     ) => {
@@ -84,9 +163,53 @@ export const CreatePoll = () => {
         setSingleChoiceOptions((prev) => [...prev, newOption]);
     };
 
+    //this function does the same as handleAddSingleChoiceOption
+    //might look into a way to not repeat this code (DRY)
+    const handleAddMultiChoiceOption = (
+        e: React.MouseEvent<HTMLButtonElement>
+    ) => {
+        e.preventDefault();
+        const newId = `choice${multichoiceOptions.length + 1}`;
+        const newChoice: PollOption = {
+            id: newId,
+            label: `choice ${multichoiceOptions.length + 1}`,
+            value: `choice ${multichoiceOptions.length + 1}`,
+        };
+        setMultiChoiceOptions((prev) => [...prev, newChoice]);
+    };
+
+    //this sets the editing state for the single and multichoice options
     const handleStartEditing = (option: PollOption) => {
         setEditingOptionId(option.id);
         setEditedValue(option.value);
+    };
+
+    //this handles the updating polldata
+    const handleUpdateCreatedPoll = (index: number) => {
+        setIsEditing(true);
+        isUpdateModalOpenref.current?.showModal();
+        const currentPolldata = allPolls[index];
+
+        setUpdatingPollData(currentPolldata);
+        setEditingPollType(currentPolldata.pollType);
+
+        //init singlechoice and multichoice options based on the poll being edited
+        if (currentPolldata.pollType === PollTypes.SINGLECHOICE) {
+            setSingleChoiceOptions(currentPolldata.pollOptions);
+            setMultiChoiceOptions([]);
+        } else if (currentPolldata.pollType === PollTypes.MULTICHOICE) {
+            setMultiChoiceOptions(currentPolldata.pollOptions);
+            setSingleChoiceOptions([]);
+        } else {
+            setSingleChoiceOptions([]);
+            setMultiChoiceOptions([]);
+        }
+    };
+
+    //this closes the updatePoll modal
+    const handleCloseUpdateModal = () => {
+        setIsEditing(false);
+        isUpdateModalOpenref.current?.close();
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -94,164 +217,189 @@ export const CreatePoll = () => {
     };
 
     const handleDeleteOption = (id: string) => {
-        setSingleChoiceOptions((prev) => prev.filter((opt) => opt.id !== id));
+        const type = isEditing ? editingPollType : pollTypeValue;
+        if (type === PollTypes.SINGLECHOICE) {
+            setSingleChoiceOptions((prev) =>
+                prev.filter((opt) => opt.id !== id)
+            );
+        } else if (type === PollTypes.MULTICHOICE) {
+            setMultiChoiceOptions((prev) =>
+                prev.filter((opt) => opt.id !== id)
+            );
+        }
+    };
+
+    const handleCreatePollValueChange = (
+        e: React.ChangeEvent<HTMLInputElement>
+    ) => {
+        const { name, value } = e.target;
+        if (isEditing) {
+            setUpdatingPollData((prev) => {
+                if (prev) {
+                    return {
+                        ...prev,
+                        [name]: value,
+                    };
+                }
+                return prev;
+            });
+        } else {
+            setCreatePollValues((prev) => ({
+                ...prev,
+                [name]: value,
+            }));
+        }
+    };
+
+    //creates polls and store them in localstorage
+    const handleCreatePoll = async (e: FormEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        const pollData: PollData = {
+            ...createPollValues,
+            pollType: pollTypeValue as PollTypes,
+            pollOptions:
+                pollTypeValue === PollTypes.SINGLECHOICE
+                    ? singlechoiceOptions
+                    : pollTypeValue === PollTypes.MULTICHOICE
+                      ? multichoiceOptions
+                      : openChoiceOptions,
+        };
+
+        setSubmittedPoll(pollData);
+
+        //this will be replaced with a post request when a real endpoint
+        //is provided
+        const newPoll = await mockApi.createPoll(pollData);
+        setAllPolls((prevPolls) => [...prevPolls, newPoll]);
+
+        setCreatePollValues({
+            pollTitle: "",
+            pollDescription: "",
+            pollType: "",
+            pollOptions: [],
+            pollQuestion: "",
+        });
+        setPollTypeValue("");
+        setSingleChoiceOptions([
+            { id: "Option1", label: "Option 1", value: "Option 1" },
+        ]);
+        setMultiChoiceOptions([
+            { id: "choice1", label: "Choice 1", value: "Choice 1" },
+        ]);
+    };
+
+    //this handles updating created poll by
+    //checking if the polltype to be edited
+    //and also the poll option to be edited
+    //then update the values with the updated poll values
+    const handleUpdatePoll = async (e: FormEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        if (updatingPollData) {
+            const updatedPollOptions =
+                editingPollType === PollTypes.SINGLECHOICE
+                    ? singlechoiceOptions
+                    : editingPollType === PollTypes.MULTICHOICE
+                      ? multichoiceOptions
+                      : openChoiceOptions;
+
+            const updatedPoll: PollData = {
+                ...updatingPollData,
+                pollType: editingPollType as PollTypes,
+                pollOptions: updatedPollOptions,
+            };
+
+            //this will be replaced with a post request when a real endpoint
+            //is provided
+            await mockApi.updatePoll(updatedPoll);
+            setAllPolls((prevPolls) =>
+                prevPolls.map((poll) =>
+                    poll.pollTitle === updatedPoll.pollTitle
+                        ? updatedPoll
+                        : poll
+                )
+            );
+            handleCloseUpdateModal();
+        }
     };
 
     return (
-        <section className="m-4 flex max-h-screen flex-col rounded-2xl bg-[#f7f7f7] p-6">
+        <section className="m-4 flex min-h-screen flex-col rounded-2xl bg-[#f7f7f7] p-6">
+            <h4 className="text-2xl font-bold">Create Poll</h4>
+            <p className="mb-6 text-[#7b7b7b]">Start creating polls</p>
             <section className="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-6">
                 <div className="min-h-screen rounded-xl bg-white p-6">
-                    <form>
-                        <fieldset>
-                            <legend></legend>
-
-                            <div className="mt-6 flex flex-col gap-6">
-                                <FloatingLabelInput
-                                    label="Enter poll title"
-                                    type="text"
-                                    name="pollTitle"
-                                    value=""
-                                    onChange={() => {}}
-                                />
-
-                                <FloatingLabelInput
-                                    label="Write brief description about the poll"
-                                    type="text"
-                                    name="pollDescription"
-                                    value=""
-                                    onChange={() => {}}
-                                />
-                            </div>
-                        </fieldset>
-
-                        <fieldset className="border-dark-gray mt-6 rounded-xl border p-6">
-                            <legend>Create questions</legend>
-                            <div className="mt-6 flex flex-col gap-6">
-                                <FloatingLabelInput
-                                    label="Enter poll question"
-                                    type="text"
-                                    name="pollQuestion"
-                                    value=""
-                                    onChange={() => {}}
-                                />
-                                <FloatingLabelSelectInput
-                                    label="Select poll type"
-                                    value={pollType}
-                                    options={pollTypes}
-                                    onChange={handleSelectPollType}
-                                />
-
-                                <div>
-                                    {pollType === "single-choice" && (
-                                        <div className="text-dark-gray text-sm">
-                                            {singlechoiceOptions.map(
-                                                (option) => (
-                                                    <div
-                                                        key={option.id}
-                                                        className="mb-2 flex items-center"
-                                                    >
-                                                        <input
-                                                            type="radio"
-                                                            id={option.id}
-                                                            name="singlechoice"
-                                                            className="mr-2"
-                                                            value={option.value}
-                                                        />
-                                                        {editingOptionId ===
-                                                        option.id ? (
-                                                            <div
-                                                                ref={editRef}
-                                                                className="flex items-center gap-2"
-                                                            >
-                                                                <input
-                                                                    type="text"
-                                                                    name="value"
-                                                                    value={
-                                                                        editedValue
-                                                                    }
-                                                                    onChange={
-                                                                        handleInputChange
-                                                                    }
-                                                                    className="rounded border p-1"
-                                                                    placeholder="Option"
-                                                                    autoFocus
-                                                                />
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={
-                                                                        handleUpdateAndExitEditMode
-                                                                    }
-                                                                    className="text-blue-500"
-                                                                >
-                                                                    Update
-                                                                </button>
-                                                            </div>
-                                                        ) : (
-                                                            <div className="flex items-center gap-4">
-                                                                <p>
-                                                                    {
-                                                                        option.value
-                                                                    }
-                                                                </p>
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={() =>
-                                                                        handleStartEditing(
-                                                                            option
-                                                                        )
-                                                                    }
-                                                                    className="text-blue-500"
-                                                                >
-                                                                    edit
-                                                                </button>
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={() =>
-                                                                        handleDeleteOption(
-                                                                            option.id
-                                                                        )
-                                                                    }
-                                                                    className="text-red-500"
-                                                                >
-                                                                    delete
-                                                                </button>
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                )
-                                            )}
-
-                                            <button
-                                                type="button"
-                                                onClick={
-                                                    handleAddSinglChoiceOption
-                                                }
-                                                className="mt-2 text-blue-500"
-                                            >
-                                                Add options
-                                            </button>
-                                        </div>
-                                    )}
-                                    {pollType === "multiple-choice" && (
-                                        <p className="text-dark-gray text-sm">
-                                            You selected Multiple Choice Poll
-                                            Type
-                                        </p>
-                                    )}
-                                    {pollType === "open-ended" && (
-                                        <p className="text-dark-gray text-sm">
-                                            You selected Open Ended Poll Type
-                                        </p>
-                                    )}
-                                </div>
-                            </div>
-                        </fieldset>
-                    </form>
+                    <CreatePollForm
+                        pollTypeValue={pollTypeValue}
+                        singlechoiceOptions={singlechoiceOptions}
+                        editingOptionId={editingOptionId}
+                        editedValue={editedValue}
+                        createPollValues={createPollValues}
+                        editRef={editRef}
+                        isEditing={false}
+                        handleCreatePollValueChange={
+                            handleCreatePollValueChange
+                        }
+                        handleSelectPollType={handleSelectPollType}
+                        handleInputChange={handleInputChange}
+                        handleUpdateAndExitEditMode={
+                            handleUpdateAndExitEditMode
+                        }
+                        handleStartEditing={handleStartEditing}
+                        handleDeleteOption={handleDeleteOption}
+                        handleAddSingleChoiceOption={
+                            handleAddSingleChoiceOption
+                        }
+                        handleCreatePoll={handleCreatePoll}
+                        handleAddMultiChoiceOption={handleAddMultiChoiceOption}
+                        multichoiceOptions={multichoiceOptions}
+                    />
                 </div>
                 <div className="min-h-screen rounded-xl bg-white p-6">
-                    This is the poll section
+                    {allPolls.length > 0 && (
+                        <PollList
+                            allPolls={allPolls}
+                            handleUpdateCreatedPoll={handleUpdateCreatedPoll}
+                            setAllPolls={(polls: PollData[]) =>
+                                setAllPolls(polls)
+                            }
+                        />
+                    )}
                 </div>
             </section>
+            <dialog ref={isUpdateModalOpenref}>
+                <button onClick={handleCloseUpdateModal}>Close</button>
+                {updatingPollData && (
+                    <CreatePollForm
+                        pollTypeValue={editingPollType}
+                        singlechoiceOptions={singlechoiceOptions}
+                        editingOptionId={editingOptionId}
+                        editedValue={editedValue}
+                        createPollValues={updatingPollData}
+                        editRef={editRef}
+                        isEditing={true}
+                        handleCloseUpdateModal={handleCloseUpdateModal}
+                        handleCreatePollValueChange={
+                            handleCreatePollValueChange
+                        }
+                        handleSelectPollType={(e) =>
+                            setEditingPollType(e.target.value)
+                        }
+                        handleInputChange={handleInputChange}
+                        handleUpdateAndExitEditMode={
+                            handleUpdateAndExitEditMode
+                        }
+                        handleStartEditing={handleStartEditing}
+                        handleDeleteOption={handleDeleteOption}
+                        handleAddSingleChoiceOption={
+                            handleAddSingleChoiceOption
+                        }
+                        handleCreatePoll={handleUpdatePoll}
+                        handleUpdatePoll={handleUpdatePoll}
+                        handleAddMultiChoiceOption={handleAddMultiChoiceOption}
+                        multichoiceOptions={multichoiceOptions}
+                    />
+                )}
+            </dialog>
         </section>
     );
 };

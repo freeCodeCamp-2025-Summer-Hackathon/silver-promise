@@ -8,20 +8,21 @@ export const SideNavbar = () => {
     const navLinks = [
         { name: "Dashboard", href: "/dashboard" },
         { name: "Polls", href: "/dashboard/polls" },
+        { name: "History", href: "/dashboard/history" },
         { name: "Settings", href: "/dashboard/settings" },
     ];
     return (
-        <nav className="bg-linear-to-b flex min-h-screen w-64 flex-col justify-between bg-gray-800 from-[#E04E51] to-[#552988] p-4 text-white">
+        <nav className="bg-linear-to-b flex h-full w-64 flex-col justify-between bg-gray-800 from-[#E04E51] to-[#552988] p-4 text-white">
             <section className="flex flex-col gap-6">
                 <div className="">
                     <h1 className="text-xl font-bold">Poll App</h1>
                 </div>
 
                 <button className="flex w-fit items-center gap-2 rounded-xl bg-white px-4 py-2">
-                    <span className="h-5 w-5">
+                    <span className="h-5 w-5 text-[#D84C54]">
                         <PlusIcon />
                     </span>
-                    <p className="font-bold text-black">Create Poll</p>
+                    <p className="font-bold text-[#D84C54]">Create Poll</p>
                 </button>
                 <ul className="flex w-full flex-col gap-4 font-bold">
                     {navLinks.map((link) => {

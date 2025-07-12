@@ -5,7 +5,7 @@ import Link from "next/link";
 
 export default function DashboardHome() {
     return (
-        <section className="m-4 flex max-h-screen w-full flex-col gap-10 rounded-2xl bg-[#f7f7f7] p-6">
+        <section className="m-4 flex max-h-screen flex-col gap-10 rounded-2xl bg-[#f7f7f7] p-6">
             <div className="grid gap-2">
                 <p className="text-2xl font-bold">Welcome, User1234!</p>
                 <p className="text-[#7b7b7b]">

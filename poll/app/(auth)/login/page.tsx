@@ -72,6 +72,15 @@ export default function LoginPage() {
                     </button>
                 </div>
             </div>
+            <div className="flex w-2/3 items-center justify-center">
+                <Image
+                    src="/ballot-box.svg"
+                    alt="Login Page"
+                    width={750}
+                    height={750}
+                    className="dark:invert-85 h-auto"
+                />
+            </div>
         </div>
     );
 }
