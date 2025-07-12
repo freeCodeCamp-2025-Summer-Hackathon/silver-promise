@@ -7,6 +7,10 @@ export const metadata = {
 
 export const dynamic = "force-dynamic"; // This ensures the page is always rendered on the server
 
+/**
+ * @description This function is the entry point of the create-poll
+ * @returns JSX.Element
+ */
 export default function PollsDashboard() {
     return (
         <section className="w-full">
