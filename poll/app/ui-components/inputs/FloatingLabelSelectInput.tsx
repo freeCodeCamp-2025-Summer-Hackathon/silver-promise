@@ -56,7 +56,7 @@ export default function FloatingLabelSelectInput({
                 id="country"
                 value={selectValue}
                 onChange={handleChange}
-                className="bg-inherit peer w-full appearance-none rounded-2xl border border-gray-300 p-2.5 transition duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="peer w-full appearance-none rounded-2xl border border-gray-300 bg-inherit p-2.5 transition duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 style={{
                     backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e")`,
                     backgroundPosition: "right 0.5rem center",
@@ -73,7 +73,7 @@ export default function FloatingLabelSelectInput({
                     </option>
                 ))}
             </select>
-            <label className="bg-inherit absolute start-1 top-2 z-10 origin-[0] -translate-y-4 scale-75 transform px-2 text-sm text-gray-500 duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:px-2 peer-focus:text-blue-600 rtl:peer-focus:left-auto rtl:peer-focus:translate-x-1/4 dark:text-gray-400 peer-focus:dark:text-blue-500">
+            <label className="absolute start-1 top-2 z-10 origin-[0] -translate-y-4 scale-75 transform bg-inherit px-2 text-sm text-gray-500 duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:px-2 peer-focus:text-blue-600 rtl:peer-focus:left-auto rtl:peer-focus:translate-x-1/4 dark:text-gray-400 peer-focus:dark:text-blue-500">
                 {label}
             </label>
         </div>

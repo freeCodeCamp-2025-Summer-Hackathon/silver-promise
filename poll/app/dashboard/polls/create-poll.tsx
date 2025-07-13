@@ -37,9 +37,9 @@ export const CreatePoll = () => {
     >([{ id: "Option1", label: "Option 1", value: "Option 1" }]);
 
     //sets state for multi choice options
-    const [multipleChoiceOptions, setMultipleChoiceOptions] = useState<PollOption[]>([
-        { id: "choice1", label: "Choice 1", value: "Choice 1" },
-    ]);
+    const [multipleChoiceOptions, setMultipleChoiceOptions] = useState<
+        PollOption[]
+    >([{ id: "choice1", label: "Choice 1", value: "Choice 1" }]);
 
     //sets state for open choice options
     const [openChoiceOptions] = useState<PollOption[]>([
@@ -323,11 +323,11 @@ export const CreatePoll = () => {
     };
 
     return (
-        <section className="m-4 flex min-h-screen flex-col rounded-2xl bg-panel-background p-6">
+        <section className="bg-panel-background m-4 flex min-h-screen flex-col rounded-2xl p-6">
             <h4 className="text-2xl font-bold">Create Poll</h4>
-            <p className="mb-6 text-cards-foreground">Start creating polls</p>
+            <p className="text-cards-foreground mb-6">Start creating polls</p>
             <section className="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-6">
-                <div className="min-h-screen rounded-xl bg-cards-background p-6">
+                <div className="bg-cards-background min-h-screen rounded-xl p-6">
                     <CreatePollForm
                         pollTypeValue={pollTypeValue}
                         singleChoiceOptions={singleChoiceOptions}
@@ -354,7 +354,7 @@ export const CreatePoll = () => {
                         multipleChoiceOptions={multipleChoiceOptions}
                     />
                 </div>
-                <div className="min-h-screen rounded-xl bg-cards-background p-6">
+                <div className="bg-cards-background min-h-screen rounded-xl p-6">
                     {allPolls.length > 0 && (
                         <PollList
                             allPolls={allPolls}

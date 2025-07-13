@@ -5,7 +5,7 @@ import Link from "@/app/ui-components/buttons/Link";
 
 export default function DashboardHome() {
     return (
-        <section className="m-4 flex max-h-screen flex-col gap-10 rounded-2xl bg-panel-background p-6">
+        <section className="bg-panel-background m-4 flex max-h-screen flex-col gap-10 rounded-2xl p-6">
             <div className="grid gap-2">
                 <p className="text-2xl font-bold">Welcome, User1234!</p>
                 <p className="text-cards-foreground">
@@ -57,7 +57,7 @@ export default function DashboardHome() {
             </section>
 
             <section>
-                <h3 className="text-sm font-semibold text-section-header uppercase">
+                <h3 className="text-section-header text-sm font-semibold uppercase">
                     Polls
                 </h3>
                 <div className="bg-table-background mt-6 rounded-xl p-6">
@@ -114,10 +114,10 @@ export default function DashboardHome() {
                         </p>
 
                         <nav className="flex gap-2">
-                            <button className="rounded-lg bg-navigation-background px-4 py-2 text-sm ">
+                            <button className="bg-navigation-background rounded-lg px-4 py-2 text-sm">
                                 Previous
                             </button>
-                            <button className="rounded-lg bg-navigation-background px-4 py-2 text-sm">
+                            <button className="bg-navigation-background rounded-lg px-4 py-2 text-sm">
                                 Next
                             </button>
                         </nav>

@@ -65,8 +65,12 @@ export const PollList = ({
                     </summary>
 
                     <div>
-                        <p className="text-foreground mt-4 mb-2">{poll.pollQuestion}</p>
-                        <p className="text-cards-foreground">{poll.pollDescription}</p>
+                        <p className="text-foreground mb-2 mt-4">
+                            {poll.pollQuestion}
+                        </p>
+                        <p className="text-cards-foreground">
+                            {poll.pollDescription}
+                        </p>
                     </div>
 
                     <div className="text-dark-gray mt-4 flex flex-col gap-2 text-sm">
