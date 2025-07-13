@@ -6,7 +6,7 @@ import { ShareIcon } from "@/public/svgs/share";
 // import { toast } from "react-toastify";
 // import Link from "next/link";
 
-import { PollData, PollTypes } from "@/lib/types/polltypes";
+import { PollData, PollTypes } from "@/lib/types/PollTypes";
 
 interface PollListProps {
     allPolls: PollData[];
@@ -20,7 +20,7 @@ interface PollListProps {
  * @param setAllPolls setStateAction updates the PollData in the allPoll array
  * @param handleUpdateCreatedPoll this function takes in the index of the PollData the user intends to update as argument
  * then apply the updates to the PollData
- * @description: This function takes in arguement props from the parent create-poll
+ * @description: This function takes in argument props from the parent create-poll
  * then renders the entire list of polls
  */
 
@@ -54,18 +54,23 @@ export const PollList = ({
 
     return (
         <div>
-            <h2 className="text-dark-gray mb-4 font-bold">Polls</h2>
+            <h2 className="text-section-header mb-4 font-bold">Polls</h2>
             {allPolls.map((poll, index) => (
                 <details
                     key={index}
-                    className="mb-6 rounded-lg border border-[#e1e1e1] p-4"
+                    className="mb-6 rounded-lg border border-gray-100 p-4"
                 >
                     <summary className="cursor-pointer font-semibold">
-                        {poll.pollQuestion}
+                        {poll.pollTitle}
                     </summary>
 
+                    <div>
+                        <p className="text-foreground mt-4 mb-2">{poll.pollQuestion}</p>
+                        <p className="text-cards-foreground">{poll.pollDescription}</p>
+                    </div>
+
                     <div className="text-dark-gray mt-4 flex flex-col gap-2 text-sm">
-                        {poll.pollType === PollTypes.SINGLECHOICE &&
+                        {poll.pollType === PollTypes.SINGLE &&
                             poll.pollOptions.map((option) => (
                                 <div
                                     key={option.id}
@@ -85,7 +90,7 @@ export const PollList = ({
                                     </label>
                                 </div>
                             ))}
-                        {poll.pollType === PollTypes.MULTICHOICE &&
+                        {poll.pollType === PollTypes.MULTIPLE &&
                             poll.pollOptions.map((option) => (
                                 <div
                                     key={option.id}

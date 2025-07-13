@@ -1,28 +1,29 @@
-import { pollData } from "./types/polltypes";
+import { PollData } from "@/lib/types/PollTypes";
 
 // Mock API functions
 export const mockApi = {
-    getPolls: async (): Promise<pollData[]> => {
+    // BUG: localStorage is not defined because this is running on the server side
+    getPolls: async (): Promise<PollData[]> => {
         const savedPolls = localStorage.getItem("createpolldata");
         if (savedPolls) {
             return JSON.parse(savedPolls);
         }
         return [];
     },
-    getPollsById: async (id: string): Promise<pollData[]> => {
+    getPollsById: async (id: string): Promise<PollData[]> => {
         const existingPolls = await mockApi.getPolls();
 
         const pollById = existingPolls.filter((poll) => poll.pollTitle === id);
 
         return pollById;
     },
-    createPoll: async (pollData: pollData): Promise<pollData> => {
+    createPoll: async (pollData: PollData): Promise<PollData> => {
         const existingPolls = await mockApi.getPolls();
         const updatedPolls = [...existingPolls, pollData];
         localStorage.setItem("createpolldata", JSON.stringify(updatedPolls));
         return pollData;
     },
-    updatePoll: async (updatedPoll: pollData): Promise<void> => {
+    updatePoll: async (updatedPoll: PollData): Promise<void> => {
         const existingPolls = await mockApi.getPolls();
         const updatedPolls = existingPolls.map((poll) =>
             poll.pollTitle === updatedPoll.pollTitle ? updatedPoll : poll
