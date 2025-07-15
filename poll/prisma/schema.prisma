@@ -84,3 +84,15 @@ model PollLinks {
   createdAt DateTime
   ExpiresAt DateTime
 }
+
+// Countries
+model Countries {
+  countryCode String @db.VarChar(3)
+  name        String @db.VarChar(35)
+}
+
+// Important Tags
+model ImportantTags {
+  id Int @id @default(autoincrement())
+  name String
+}
