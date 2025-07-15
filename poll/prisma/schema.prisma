@@ -25,74 +25,85 @@ model User {
   createdAt DateTime @default(now())
   isActive  Boolean  @default(true)
   polls     Poll[]
+  tags      UserTag[]
+  answers   PollAnswer[]
 }
 
 // User Tags
-model UserTags {
+model UserTag {
   id     Int  @id @default(autoincrement())
-  userId User @relation(fields: [userId], references: [id])
+  author User @relation(fields: [userId], references: [id])
+  userId Int
 }
 
 // User Profiles
-model UserProfiles {
+model UserProfile {
   id        Int      @id @default(autoincrement())
   bio       String
-  updatedAt DateTime
+  updatedAt DateTime @updatedAt
 }
 
 // Poll
 model Poll {
   id        BigInt   @id @default(autoincrement())
   author    User     @relation(fields: [userId], references: [id])
+  userId    Int
   title     String   @db.VarChar(255)
   startDate DateTime @default(now())
   endDate   DateTime
   isPublic  Boolean
+  links     PollLink[]
 }
 
 // Poll Questions
-model PollQuestions {
-  id BigInt @id @default(autoincrement())
-  question String
-  type String
-  position Int
+model PollQuestion {
+  id         BigInt  @id @default(autoincrement())
+  question   String
+  type       String
+  position   Int
   isRequired Boolean
+  options    PollOption[]
+  answers    PollAnswer[]
 }
 
 // Poll Options
-model PollOptions {
-  id Int @id @default(autoincrement())
-  questionId PollQuestion @relation(fields: [pollQuestion], references: [id])
-  option String
-  position Int
+model PollOption {
+  id         Int          @id @default(autoincrement())
+  question   PollQuestion @relation(fields: [questionId], references: [id])
+  questionId BigInt
+  option     String
+  position   Int
 }
 
 // Poll Answers
-model PollAnswers {
-  id         Int      @id @default(autoincrement())
-  questionId PollQuestion     @relation(fields: [pollQuestionId], references: [id])
-  userId     User     @relation(fields: [userId], references: [id])
+model PollAnswer {
+  id         Int          @id @default(autoincrement())
+  question   PollQuestion @relation(fields: [questionId], references: [id])
+  questionId BigInt
+  author     User         @relation(fields: [userId], references: [id])
+  userId     Int
   answer     String
   sentDate   DateTime
 }
 
 // Poll Links
-model PollLinks {
-  id        BigInt   @id @default(autoincrement())
-  pollId    Poll     @relation(fields: [pollId], references: [id])
-  slug      String
-  createdAt DateTime
-  ExpiresAt DateTime
+model PollLink {
+  id         BigInt   @id @default(autoincrement())
+  linkedPoll Poll     @relation(fields: [pollId], references: [id])
+  pollId     BigInt
+  slug       String
+  createdAt  DateTime @default(now())
+  ExpiresAt  DateTime
 }
 
 // Countries
-model Countries {
+model Country {
   countryCode String @db.VarChar(3)
-  name        String @db.VarChar(35)
+  name        String @unique @db.VarChar(35)
 }
 
 // Important Tags
 model ImportantTags {
-  id Int @id @default(autoincrement())
+  id   Int    @id @default(autoincrement())
   name String
 }
