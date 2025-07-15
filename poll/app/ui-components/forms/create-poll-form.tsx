@@ -7,16 +7,16 @@ import { EditIcon } from "@/public/svgs/edit";
 import { DeleteIcon } from "@/public/svgs/delete";
 import { PrimaryButtonWithArrowRight } from "@/app/ui-components/buttons/PrimaryButton";
 
-import { pollData, pollOption, PollTypes } from "@/lib/types/polltypes";
+import { PollData, PollOption, PollTypes } from "@/lib/types/PollTypes";
 
 interface CreatePollFormProps {
     pollTypeValue: string;
-    singlechoiceOptions: pollOption[];
-    multichoiceOptions: pollOption[];
+    singleChoiceOptions: PollOption[];
+    multipleChoiceOptions: PollOption[];
     editingOptionId: string | null;
     editedValue: string;
     isEditing?: boolean;
-    createPollValues: pollData;
+    createPollValues: PollData;
     editRef: React.RefObject<HTMLDivElement | null>;
     handleCloseUpdateModal?: () => void;
     handleCreatePollValueChange: (
@@ -25,7 +25,7 @@ interface CreatePollFormProps {
     handleSelectPollType: (e: React.ChangeEvent<HTMLSelectElement>) => void;
     handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     handleUpdateAndExitEditMode: () => void;
-    handleStartEditing: (option: pollOption) => void;
+    handleStartEditing: (option: PollOption) => void;
     handleDeleteOption: (id: string) => void;
     handleAddSingleChoiceOption: (
         e: React.MouseEvent<HTMLButtonElement>
@@ -38,8 +38,8 @@ interface CreatePollFormProps {
 }
 
 const pollType = [
-    { value: PollTypes.SINGLECHOICE, label: PollTypes.SINGLECHOICE },
-    { value: PollTypes.MULTICHOICE, label: PollTypes.MULTICHOICE },
+    { value: PollTypes.SINGLE, label: PollTypes.SINGLE },
+    { value: PollTypes.MULTIPLE, label: PollTypes.MULTIPLE },
     { value: PollTypes.OPEN, label: PollTypes.OPEN },
 ];
 
@@ -51,8 +51,8 @@ const pollType = [
 
 export const CreatePollForm: React.FC<CreatePollFormProps> = ({
     pollTypeValue,
-    singlechoiceOptions,
-    multichoiceOptions,
+    singleChoiceOptions,
+    multipleChoiceOptions,
     editingOptionId,
     editedValue,
     isEditing,
@@ -71,11 +71,11 @@ export const CreatePollForm: React.FC<CreatePollFormProps> = ({
     handleUpdatePoll,
 }) => {
     return (
-        <form>
-            <fieldset>
+        <form className="bg-inherit">
+            <fieldset className="bg-inherit">
                 <legend></legend>
 
-                <div className="mt-6 flex flex-col gap-6">
+                <div className="mt-6 flex flex-col gap-6 bg-inherit">
                     <FloatingLabelInput
                         label="Enter poll title"
                         type="text"
@@ -94,9 +94,9 @@ export const CreatePollForm: React.FC<CreatePollFormProps> = ({
                 </div>
             </fieldset>
 
-            <fieldset className="border-dark-gray mt-6 rounded-xl border p-6">
-                <legend>Create questions</legend>
-                <div className="mt-6 flex flex-col gap-6">
+            <fieldset className="border-dark-gray mt-6 rounded-xl border bg-inherit p-6">
+                <legend className="px-2">Create questions</legend>
+                <div className="mt-6 flex flex-col gap-6 bg-inherit">
                     <FloatingLabelInput
                         label="Enter poll question"
                         type="text"
@@ -112,9 +112,9 @@ export const CreatePollForm: React.FC<CreatePollFormProps> = ({
                     />
 
                     <div>
-                        {pollTypeValue === PollTypes.SINGLECHOICE && (
+                        {pollTypeValue === PollTypes.SINGLE && (
                             <div className="text-dark-gray text-sm">
-                                {singlechoiceOptions.map((option) => (
+                                {singleChoiceOptions.map((option) => (
                                     <div
                                         key={option.id}
                                         className="mb-2 flex items-center"
@@ -122,7 +122,7 @@ export const CreatePollForm: React.FC<CreatePollFormProps> = ({
                                         <input
                                             type="radio"
                                             id={option.id}
-                                            name={PollTypes.SINGLECHOICE}
+                                            name={PollTypes.SINGLE}
                                             className="mr-2"
                                             value={option.value}
                                         />
@@ -197,9 +197,9 @@ export const CreatePollForm: React.FC<CreatePollFormProps> = ({
                                 </button>
                             </div>
                         )}
-                        {pollTypeValue === PollTypes.MULTICHOICE && (
+                        {pollTypeValue === PollTypes.MULTIPLE && (
                             <div className="text-dark-gray text-sm">
-                                {multichoiceOptions.map((option, index) => (
+                                {multipleChoiceOptions.map((option, index) => (
                                     <div
                                         key={index}
                                         className="mb-2 flex items-center"
@@ -207,7 +207,7 @@ export const CreatePollForm: React.FC<CreatePollFormProps> = ({
                                         <input
                                             type="checkbox"
                                             id={option.id}
-                                            name={PollTypes.MULTICHOICE}
+                                            name={PollTypes.MULTIPLE}
                                             className="mr-2"
                                             value={option.value}
                                         />

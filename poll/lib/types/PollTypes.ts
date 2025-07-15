@@ -1,6 +1,6 @@
 export enum PollTypes {
-    SINGLECHOICE = "single-choice",
-    MULTICHOICE = "multi-choice",
+    SINGLE = "single-choice",
+    MULTIPLE = "multi-choice",
     OPEN = "open",
 }
 
