@@ -6,13 +6,16 @@ export async function POST(request: NextRequest) {
     try {
         const { userIdentifier, password } = await request.json();
 
-        const result = await AuthService.validateLogin(userIdentifier, password);
+        const result = await AuthService.validateLogin(
+            userIdentifier,
+            password
+        );
 
         if (result.success) {
             const responseData: LoginResponseData = {
                 success: true,
                 message: "Login successful",
-                user: result.user
+                user: result.user,
             };
 
             const response = Response.json(responseData, { status: 200 });
@@ -26,7 +29,7 @@ export async function POST(request: NextRequest) {
         } else {
             const responseData: LoginResponseData = {
                 success: false,
-                message: result.message
+                message: result.message,
             };
 
             return Response.json(responseData, { status: 401 });
@@ -37,9 +40,6 @@ export async function POST(request: NextRequest) {
             message: "Internal server error",
         };
 
-        return Response.json(
-            responseData,
-            { status: 500 }
-        )
+        return Response.json(responseData, { status: 500 });
     }
 }

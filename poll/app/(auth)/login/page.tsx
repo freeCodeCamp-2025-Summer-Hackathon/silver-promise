@@ -29,7 +29,7 @@ export default function LoginPage() {
         password: "",
     });
 
-    const [errorMessage, setErrorMessage] = useState("")
+    const [errorMessage, setErrorMessage] = useState("");
 
     useEffect(() => {
         if (!isLoading && user) {
@@ -90,7 +90,7 @@ export default function LoginPage() {
 
     function showError(message: string) {
         const errorContainer = document.getElementById("error-container");
-        setErrorMessage(message)
+        setErrorMessage(message);
 
         if (errorContainer) {
             errorContainer.classList.remove("hidden");

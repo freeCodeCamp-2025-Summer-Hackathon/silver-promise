@@ -3,7 +3,7 @@ import { AuthService } from "@/lib/services/authService";
 
 export async function GET(request: NextRequest) {
     try {
-        // Read JWT token 
+        // Read JWT token
         const token = request.cookies.get("auth-token")?.value;
 
         if (!token) {
@@ -28,14 +28,13 @@ export async function GET(request: NextRequest) {
             id: decoded.userId,
             username: decoded.username,
             email: decoded.email,
-            country: decoded.country || "unknown"
+            country: decoded.country || "unknown",
         };
 
         return Response.json({
             success: true,
-            user: userData
+            user: userData,
         });
-
     } catch (error) {
         return Response.json(
             { success: false, message: "Internal server error" },

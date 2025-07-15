@@ -23,12 +23,15 @@ export class AuthService {
             };
         }
 
-        const isValidPassword = await bcrypt.compare(password, user.passwordHash);
+        const isValidPassword = await bcrypt.compare(
+            password,
+            user.passwordHash
+        );
 
         if (!isValidPassword) {
             return {
                 success: false,
-                message: "Invalid password"
+                message: "Invalid password",
             };
         }
 
@@ -40,7 +43,7 @@ export class AuthService {
             },
             process.env.JWT_SECRET!,
             { expiresIn: "2d" }
-        )
+        );
 
         return {
             success: true,
@@ -49,9 +52,9 @@ export class AuthService {
                 id: user.id,
                 username: user.username,
                 email: user.email,
-                country: user.country
+                country: user.country,
             },
-            token
+            token,
         };
     }
 
@@ -92,7 +95,7 @@ export class AuthService {
             id: decoded.userId,
             username: decoded.username,
             email: decoded.email,
-            country: decoded.country
+            country: decoded.country,
         };
     }
 }

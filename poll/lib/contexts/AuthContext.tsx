@@ -20,12 +20,12 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 /**
  * Provides authentication context to its children components.
- * 
+ *
  * This component manages the authentication state (`user`), loading state (`isLoading`),
  * and exposes `login` and `logout` methods via the `AuthContext`.
- * 
+ *
  * On mount, it checks the current authentication status by calling `/api/auth/me`.
- * 
+ *
  * @param children - The child React nodes that will have access to the authentication context.
  * @returns The `AuthContext.Provider` wrapping the children.
  */
