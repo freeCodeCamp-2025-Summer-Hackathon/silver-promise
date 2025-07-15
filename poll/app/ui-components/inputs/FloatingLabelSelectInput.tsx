@@ -6,7 +6,9 @@ interface FloatingLabelSelectInputProps {
     label: string;
     value: string;
     options: { value: string; label: string }[];
+    name?: string;
     onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+    required?: boolean;
 }
 
 /**
@@ -39,6 +41,8 @@ export default function FloatingLabelSelectInput({
     value,
     options,
     onChange,
+    required = false,
+    ...props
 }: FloatingLabelSelectInputProps) {
     const [selectValue, setSelectValue] = useState(value);
 
@@ -57,6 +61,8 @@ export default function FloatingLabelSelectInput({
                 value={selectValue}
                 onChange={handleChange}
                 className="peer w-full appearance-none rounded-2xl border border-gray-300 bg-inherit p-2.5 transition duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required={required}
+                {...props}
                 style={{
                     backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e")`,
                     backgroundPosition: "right 0.5rem center",
