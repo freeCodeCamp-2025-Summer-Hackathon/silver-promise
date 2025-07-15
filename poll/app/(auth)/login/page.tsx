@@ -30,7 +30,7 @@ export default function LoginPage() {
     });
 
     const [errorMessage, setErrorMessage] = useState("");
-    const [isErrorVisible, setIsErrorVisible] = useState(false)
+    const [isErrorVisible, setIsErrorVisible] = useState(false);
 
     useEffect(() => {
         if (!isLoading && user) {
