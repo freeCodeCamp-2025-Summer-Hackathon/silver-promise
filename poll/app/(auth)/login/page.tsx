@@ -30,6 +30,7 @@ export default function LoginPage() {
     });
 
     const [errorMessage, setErrorMessage] = useState("");
+    const [isErrorVisible, setIsErrorVisible] = useState(false)
 
     useEffect(() => {
         if (!isLoading && user) {
@@ -84,16 +85,8 @@ export default function LoginPage() {
             login(data.user);
         } else {
             const errorData = await response.json();
-            showError(errorData.message || "Login failed");
-        }
-    }
-
-    function showError(message: string) {
-        const errorContainer = document.getElementById("error-container");
-        setErrorMessage(message);
-
-        if (errorContainer) {
-            errorContainer.classList.remove("hidden");
+            setErrorMessage(errorData.message || "Login failed");
+            setIsErrorVisible(true);
         }
     }
 
@@ -117,6 +110,7 @@ export default function LoginPage() {
                     <div
                         id="error-container"
                         className="mb-4 hidden rounded-lg border-2 border-red-500 text-red-500"
+                        hidden={!isErrorVisible}
                     >
                         <ErrorAlert id="error-alert" message={errorMessage} />
                     </div>

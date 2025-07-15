@@ -42,10 +42,7 @@ export default function Register() {
     };
 
     const handleSubmit = (e: React.FormEvent) => {
-        console.log("Form submitted:", formData);
         e.preventDefault();
-
-        console.log("Form submitted:", formData);
     };
 
     return (
