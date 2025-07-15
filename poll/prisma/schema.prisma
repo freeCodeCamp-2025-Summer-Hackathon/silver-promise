@@ -14,9 +14,61 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// User
 model User {
-  id       Int     @id @default(autoincrement())
-  username String  @unique
-  email    String  @unique
-  country  String?
+  id        Int      @id @default(autoincrement())
+  firstName String   @db.VarChar(50)
+  lastName  String   @db.VarChar(50)
+  email     String   @unique @db.VarChar(200)
+  country   String
+  passHash  String   @unique @db.VarChar(255)
+  createdAt DateTime @default(now())
+  isActive  Boolean  @default(true)
+  polls     Poll[]
+}
+
+// User Tags
+model UserTags {
+  id     Int  @id @default(autoincrement())
+  userId User @relation(fields: [userId], references: [id])
+}
+
+// Countries
+model Countries {
+  countryCode String @db.VarChar(3)
+  name        String @db.VarChar(35)
+}
+
+model UserProfiles {
+  id        Int      @id @default(autoincrement())
+  bio       String
+  updatedAt DateTime
+}
+
+// Poll
+model Poll {
+  id        BigInt   @id @default(autoincrement())
+  author    User     @relation(fields: [userId], references: [id])
+  title     String   @db.VarChar(255)
+  startDate DateTime @default(now())
+  endDate   DateTime
+  isPublic  Boolean
+}
+
+// Poll Answers
+model PollAnswers {
+  id         Int      @id @default(autoincrement())
+  questionId Poll     @relation(fields: [pollId], references: [id])
+  userId     User     @relation(fields: [userId], references: [id])
+  answer     String
+  sentDate   DateTime
+}
+
+// Poll Links
+model PollLinks {
+  id        BigInt   @id @default(autoincrement())
+  pollId    Poll     @relation(fields: [pollId], references: [id])
+  slug      String
+  createdAt DateTime
+  ExpiresAt DateTime
 }
