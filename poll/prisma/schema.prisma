@@ -33,12 +33,7 @@ model UserTags {
   userId User @relation(fields: [userId], references: [id])
 }
 
-// Countries
-model Countries {
-  countryCode String @db.VarChar(3)
-  name        String @db.VarChar(35)
-}
-
+// User Profiles
 model UserProfiles {
   id        Int      @id @default(autoincrement())
   bio       String
@@ -55,10 +50,27 @@ model Poll {
   isPublic  Boolean
 }
 
+// Poll Questions
+model PollQuestions {
+  id BigInt @id @default(autoincrement())
+  question String
+  type String
+  position Int
+  isRequired Boolean
+}
+
+// Poll Options
+model PollOptions {
+  id Int @id @default(autoincrement())
+  questionId PollQuestion @relation(fields: [pollQuestion], references: [id])
+  option String
+  position Int
+}
+
 // Poll Answers
 model PollAnswers {
   id         Int      @id @default(autoincrement())
-  questionId Poll     @relation(fields: [pollId], references: [id])
+  questionId PollQuestion     @relation(fields: [pollQuestionId], references: [id])
   userId     User     @relation(fields: [userId], references: [id])
   answer     String
   sentDate   DateTime
