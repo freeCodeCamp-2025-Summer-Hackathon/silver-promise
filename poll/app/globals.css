@@ -9,7 +9,7 @@
     --navigation-background: var(--color-gray-200);
     --section-header: #7b7b7b;
     --panel-background: #f7f7f7;
-    --bar-background: var(--color-gray-200)
+    --bar-background: var(--color-gray-200);
 }
 
 @theme inline {
@@ -31,7 +31,7 @@
     --color-navigation-background: var(--navigation-background);
     --color-section-header: var(--section-header);
     --color-panel-background: var(--panel-background);
-    --color-bar-background: var(--bar-background)
+    --color-bar-background: var(--bar-background);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -44,7 +44,7 @@
         --navigation-background: var(--color-gray-700);
         --section-header: var(--color-gray-300);
         --panel-background: var(--color-gray-900);
-        --bar-background: var(--color-gray-700)
+        --bar-background: var(--color-gray-700);
     }
 }
 
