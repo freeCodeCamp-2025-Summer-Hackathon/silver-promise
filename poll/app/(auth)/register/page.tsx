@@ -43,6 +43,11 @@ export default function Register() {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (formData.password !== formData.confirmPassword) {
+            setErrors((prev) => ({ ...prev, passwordMatch: true }));
+            return;
+        }
     };
 
     return (
@@ -91,7 +96,7 @@ export default function Register() {
                         <FloatingLabelInputValidation
                             type="password"
                             label="Confirm Password"
-                            name="confirm_password"
+                            name="confirmPassword"
                             value={formData.confirmPassword}
                             onChange={handleInputChange}
                             errorMessage="Passwords do not match"

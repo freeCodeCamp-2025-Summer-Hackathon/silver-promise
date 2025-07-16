@@ -4,8 +4,8 @@ import React, { HTMLInputTypeAttribute } from "react";
 
 interface FloatingLabelInputProps {
     label: string;
-    value: string;
     name: string;
+    value?: string;
     onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
     type?: HTMLInputTypeAttribute | undefined;
     required?: boolean;
@@ -26,9 +26,9 @@ interface FloatingLabelInputProps {
  */
 export default function FloatingLabelInput({
     label,
-    value,
     onChange,
     name,
+    value,
     type = "text",
     required = false,
     ...props

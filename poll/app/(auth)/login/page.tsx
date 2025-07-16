@@ -4,7 +4,7 @@ import { PrimaryButtonWithArrowRight } from "@/app/ui-components/buttons/Primary
 import FloatingLabelInput from "@/app/ui-components/inputs/FloatingLabelInput";
 import Image from "next/image";
 import Link from "@/app/ui-components/buttons/Link";
-import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/contexts/AuthContext";
 import ErrorAlert from "@/app/ui-components/alerts/Error";
@@ -24,34 +24,15 @@ export default function LoginPage() {
     const router = useRouter();
     const { login, isLoading, user } = useAuth();
 
-    const [credentials, setCredentials] = useState({
-        userIdentifier: "",
-        password: "",
-    });
-
     const [errorMessage, setErrorMessage] = useState("");
     const [isErrorVisible, setIsErrorVisible] = useState(false);
 
+    // Redirect to dashboard if user is logged in
     useEffect(() => {
         if (!isLoading && user) {
             router.push("/dashboard");
         }
     }, [user, isLoading, router]);
-
-    /**
-     * Handles changes to input fields by updating the corresponding property
-     * in the credentials state object. Extracts the `name` and `value` from the
-     * input event target and updates the state accordingly.
-     *
-     * @param e - The change event from an HTML input element.
-     */
-    function handleChange(e: ChangeEvent<HTMLInputElement>) {
-        const { name, value } = e.target;
-        setCredentials((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
-    }
 
     /**
      * Handles the login form submission event.
@@ -117,17 +98,13 @@ export default function LoginPage() {
                     <div className="flex flex-col space-y-4 bg-inherit">
                         <FloatingLabelInput
                             label="Email/Username"
-                            value={credentials.userIdentifier}
                             type="text"
                             name="userIdentifier"
-                            onChange={handleChange}
                         />
                         <FloatingLabelInput
                             label="Password"
-                            value={credentials.password}
                             type="password"
                             name="password"
-                            onChange={handleChange}
                         />
                         <PrimaryButtonWithArrowRight
                             label="Login"
