@@ -27,22 +27,22 @@ export default function PollResultPage() {
         <section className="bg-panel-background min-h-screen w-full p-10">
             <div className="flex flex-col gap-6">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-800">
+                    <h1 className="text-2xl font-bold text-foreground">
                         Poll Result
                     </h1>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-cards-foreground">
                         Start creating polls
                     </p>
                 </div>
 
                 <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
                     {/* LEFT: Poll Summary + Results */}
-                    <div className="space-y-6 rounded-2xl bg-white p-6 shadow lg:col-span-2">
+                    <div className="bg-table-background space-y-6 rounded-2xl p-6 shadow lg:col-span-2">
                         <div className="space-y-1">
-                            <h2 className="text-xl font-semibold text-gray-800">
+                            <h2 className="text-xl font-semibold text-foreground">
                                 {poll.question}
                             </h2>
-                            <p className="text-sm text-gray-500">
+                            <p className="text-sm text-cards-foreground">
                                 {poll.description}
                             </p>
                         </div>
@@ -57,11 +57,11 @@ export default function PollResultPage() {
 
                                 return (
                                     <div key={option.id} className="space-y-1">
-                                        <div className="flex justify-between font-medium text-gray-800">
+                                        <div className="flex justify-between font-medium text-foreground">
                                             <span>{option.text}</span>
                                             <span>{percent}%</span>
                                         </div>
-                                        <div className="h-2 w-full rounded-full bg-gray-200">
+                                        <div className="h-2 w-full rounded-full bg-bar-background">
                                             <div
                                                 className={`h-2 rounded-full ${option.color}`}
                                                 style={{ width: `${percent}%` }}
@@ -78,12 +78,12 @@ export default function PollResultPage() {
 
                     {/* RIGHT: Chart + Meta */}
                     <div className="flex flex-col gap-6">
-                        <div className="space-y-4 rounded-2xl bg-white p-6 shadow">
-                            <h3 className="text-lg font-semibold text-gray-800">
+                        <div className="bg-table-background space-y-4 rounded-2xl p-6 shadow">
+                            <h3 className="text-foreground text-lg font-semibold">
                                 Votes
                             </h3>
                             <div className="text-center">
-                                <p className="text-4xl font-bold text-gray-800">
+                                <p className="text-4xl font-bold text-foreground">
                                     {totalVotes}
                                 </p>
                             </div>
@@ -114,16 +114,16 @@ export default function PollResultPage() {
                                     }}
                                 />
                             </div>
-                            <p className="text-center text-sm text-gray-600">
+                            <p className="text-center text-sm text-cards-foreground">
                                 Poll expiry date <br />
-                                <span className="font-semibold text-black">
+                                <span className="font-semibold text-foreground">
                                     12 June, 2025
                                 </span>
                             </p>
                         </div>
 
-                        <div className="space-y-2 rounded-2xl bg-white p-6 shadow">
-                            <h3 className="text-lg font-semibold text-gray-800">
+                        <div className="space-y-2 rounded-2xl bg-table-background p-6 shadow">
+                            <h3 className="text-lg font-semibold text-foreground">
                                 Share
                             </h3>
                             <button className="w-full text-left text-sm text-blue-500 hover:underline">
@@ -132,7 +132,7 @@ export default function PollResultPage() {
                             <button className="w-full text-left text-sm text-blue-700 hover:underline">
                                 Facebook
                             </button>
-                            <button className="w-full text-left text-sm text-gray-700 hover:underline">
+                            <button className="w-full text-left text-sm text-cards-foreground hover:underline">
                                 Copy link
                             </button>
                         </div>
