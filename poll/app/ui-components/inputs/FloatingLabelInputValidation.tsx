@@ -19,11 +19,11 @@ interface FloatingLabelInputValidationProps {
  *
  * @param label - The label text displayed for the input.
  * @param value - The current value of the input.
- * @param type - The input type (e.g., "text", "email", "password"). Defaults to "text".
+ * @param name - The name attribute for the input.
  * @param onChange - Callback fired when the input value changes.
+ * @param type - The input type (e.g., "text", "email", "password"). Defaults to "text".
  * @param errorMessage - The error message to display when the input is invalid.
  * @param isInvalid - Whether the input is in an invalid state.
- * @param name - The name attribute for the input.
  * @param required - Whether the input is required.
  *
  * @returns A React component rendering a floating label input with validation feedback.
@@ -31,11 +31,11 @@ interface FloatingLabelInputValidationProps {
 export default function FloatingLabelInputValidation({
     label,
     value,
-    type = "text",
+    name,
     onChange,
+    type = "text",
     errorMessage = "",
     isInvalid = false,
-    name = "",
     required = false,
 }: FloatingLabelInputValidationProps) {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

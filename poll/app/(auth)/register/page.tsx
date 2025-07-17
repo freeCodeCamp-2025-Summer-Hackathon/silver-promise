@@ -6,7 +6,7 @@ import FloatingLabelInputValidation from "@/app/ui-components/inputs/FloatingLab
 import FloatingLabelSelectInput from "@/app/ui-components/inputs/FloatingLabelSelectInput";
 import { countries } from "@/lib/countries";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "@/app/ui-components/buttons/Link";
 import { useState } from "react";
 
 export default function Register() {
@@ -48,28 +48,21 @@ export default function Register() {
             setErrors((prev) => ({ ...prev, passwordMatch: true }));
             return;
         }
-
-        console.log("Form submitted:", formData);
     };
 
     return (
-        <div className="flex h-screen p-24">
-            <div className="flex w-1/3 flex-col items-center justify-center">
+        <div className="flex h-screen bg-inherit p-24">
+            <div className="flex w-1/3 flex-col items-center justify-center bg-inherit">
                 <form
-                    className="flex w-full max-w-sm flex-col space-y-8"
+                    className="flex w-full max-w-sm flex-col space-y-8 bg-inherit"
                     onSubmit={handleSubmit}
                 >
                     <h1 className="mb-4 text-4xl font-bold">Create Account</h1>
                     <p className="text-sm text-gray-500">
                         Already have an account?{" "}
-                        <Link
-                            href="/login"
-                            className="text-blue-500 hover:underline"
-                        >
-                            Log in
-                        </Link>
+                        <Link href="/login">Log in</Link>
                     </p>
-                    <div className="flex flex-col space-y-4">
+                    <div className="flex flex-col space-y-4 bg-inherit">
                         <FloatingLabelInput
                             label="Username"
                             name="username"
@@ -89,6 +82,7 @@ export default function Register() {
                         <FloatingLabelSelectInput
                             label="Country"
                             value=""
+                            name="country"
                             options={countries}
                         />
                         <FloatingLabelInput
@@ -114,6 +108,7 @@ export default function Register() {
                         />
                     </div>
                 </form>
+                {/* INFO: Placeholder for social login options
                 <hr className="w-100 m-8 text-gray-600"></hr>
                 <div className="flex flex-col items-center justify-center space-y-4">
                     <p className="text-sm text-gray-500">OR</p>
@@ -123,12 +118,13 @@ export default function Register() {
                         </button>
                     </div>
                 </div>
+                */}
             </div>
 
             <div className="flex w-2/3 items-center justify-center">
                 <Image
                     src="/ballot-box.svg"
-                    alt="Login Page"
+                    alt=""
                     width={750}
                     height={750}
                     className="dark:invert-85 h-auto"

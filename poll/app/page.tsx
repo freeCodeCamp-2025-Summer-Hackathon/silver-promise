@@ -1,9 +1,5 @@
-import LoginPage from "./(auth)/login/page";
+import { redirect } from "next/navigation";
 
 export default function Home() {
-    return (
-        <section>
-            <LoginPage />
-        </section>
-    );
+    redirect("/login");
 }
