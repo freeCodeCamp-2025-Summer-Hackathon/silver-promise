@@ -51,12 +51,14 @@ export function PrimaryButtonWithArrowRight({
     onClick = () => {},
     type = "button",
     onSubmit = () => {},
+    ...props
 }: PrimaryButtonProps) {
     return (
         <button
             type={type}
             onClick={onClick}
             onSubmit={onSubmit}
+            {...props}
             className="from-soft-red to-dark-violet hover:from-soft-red-hover hover:to-dark-violet-hover w-full cursor-pointer rounded-2xl bg-gradient-to-r p-2 text-white hover:bg-gradient-to-r hover:transition-colors"
         >
             <div className="flex items-center justify-between px-2">
