@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { ButtonHTMLAttributes } from "react";
 
-interface PrimaryButtonProps {
+interface PrimaryButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     label: string;
     type: ButtonHTMLAttributes<HTMLButtonElement>["type"];
     onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
@@ -23,11 +23,13 @@ export function PrimaryButton({
     label,
     onClick = () => {},
     type = "button",
+    ...props
 }: PrimaryButtonProps) {
     return (
         <button
             type={type}
             onClick={onClick}
+            {...props}
             className="from-soft-red to-dark-violet hover:from-soft-red-hover hover:to-dark-violet-hover rounded-2xl bg-gradient-to-r p-2 text-white hover:bg-gradient-to-r hover:transition-colors"
         >
             {label}

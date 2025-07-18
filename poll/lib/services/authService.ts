@@ -59,6 +59,69 @@ export class AuthService {
     }
 
     /**
+     * Registers a new user with the provided username, email, country, and password.
+     * 
+     * This method checks for existing users by email and username to prevent duplicates.
+     * If the email or username is already in use, it returns a failure response with an appropriate message.
+     * Otherwise, it hashes the password, creates a new user record, and returns a success response with the user's details.
+     * 
+     * @param username - The desired username for the new user.
+     * @param email - The email address for the new user.
+     * @param country - The country of the new user.
+     * @param password - The plaintext password to be hashed and stored.
+     * @returns An object indicating success or failure, a message, and (on success) the registered user's details.
+     */
+    static async registerUser(
+        username: string,
+        email: string,
+        country: string,
+        password: string
+    ) {
+        let existingUser = await UserRepository.findByEmail(email);
+        if (existingUser) {
+            return {
+                success: false,
+                message: "Email already in use",
+            };
+        }
+
+        existingUser = await UserRepository.findByUsername(username);
+        if (existingUser) {
+            return {
+                success: false,
+                message: "Username already in use",
+            };
+        }
+
+        const passwordHash = await bcrypt.hash(password, 12);
+
+        const newUser = await UserRepository.create({
+            username,
+            email,
+            country,
+            passwordHash,
+        });
+
+        if (!newUser) {
+            return {
+                success: false,
+                message: "Failed to create user",
+            };
+        }
+
+        return {
+            success: true,
+            message: "User registered successfully",
+            user: {
+                id: newUser.id,
+                username: newUser.username,
+                email: newUser.email,
+                country: newUser.country,
+            },
+        };
+    }
+
+    /**
      * Verifies a JWT token.
      *
      * @param token - The JWT token to verify.

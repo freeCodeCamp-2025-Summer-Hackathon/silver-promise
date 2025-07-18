@@ -20,10 +20,25 @@ export class UserRepository {
     }
 
     static async findByEmail(email: string): Promise<any | null> {
+        return null; // Simulate no user found
         throw new Error("Not implemented");
     }
 
     static async findByUsername(username: string): Promise<any | null> {
+        return null; // Simulate no user found
         throw new Error("Not implemented");
+    }
+
+    static async create(userData: {
+        username: string;
+        email: string;
+        country: string;
+        passwordHash: string;
+    }): Promise<any | null> {
+        // Simulate user creation
+        return {
+            id: "123",
+            ...userData,
+        };
     }
 }
