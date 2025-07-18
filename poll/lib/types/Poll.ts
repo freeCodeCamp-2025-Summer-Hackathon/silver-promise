@@ -15,4 +15,4 @@ export type Poll = PollResult & {
     status: string;
     createdAt: Date;
     authorId: number;
-}
+};

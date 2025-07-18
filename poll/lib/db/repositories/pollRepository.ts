@@ -42,10 +42,25 @@ export class PollRepository {
                 createdAt: new Date(),
                 authorId: userId,
                 results: [
-                    { id: 1, text: "Option 1", voteCount: 0, color: "bg-red-400" },
-                    { id: 2, text: "Option 2", voteCount: 0, color: "bg-cyan-400" },
-                    { id: 3, text: "Option 3", voteCount: 0, color: "bg-gray-300" },
-                ]
+                    {
+                        id: 1,
+                        text: "Option 1",
+                        voteCount: 0,
+                        color: "bg-red-400",
+                    },
+                    {
+                        id: 2,
+                        text: "Option 2",
+                        voteCount: 0,
+                        color: "bg-cyan-400",
+                    },
+                    {
+                        id: 3,
+                        text: "Option 3",
+                        voteCount: 0,
+                        color: "bg-gray-300",
+                    },
+                ],
             };
             polls.push(poll);
         }

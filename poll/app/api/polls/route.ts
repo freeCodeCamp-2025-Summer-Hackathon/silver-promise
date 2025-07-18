@@ -6,7 +6,9 @@ export async function GET(request: NextRequest) {
     // Get the Authorization header
     const authHeader = request.headers.get("authorization");
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
-        return new Response("Missing or invalid Authorization header", { status: 401 });
+        return new Response("Missing or invalid Authorization header", {
+            status: 401,
+        });
     }
 
     // Extract the token from the header
