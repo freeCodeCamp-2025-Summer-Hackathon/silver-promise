@@ -8,10 +8,10 @@ export async function POST(request: NextRequest) {
             await request.json();
 
         // Validate required fields
-        if (!username || !email || !password || !confirmPassword) {
+        if (!username || !email || !country || !password || !confirmPassword) {
             const response: RegisterResponse = {
                 success: false,
-                message: "All fields are required",
+                message: "All fields are required, including country",
             };
             return Response.json(response, { status: 400 });
         }
