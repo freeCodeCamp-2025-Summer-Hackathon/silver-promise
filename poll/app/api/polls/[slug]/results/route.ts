@@ -17,10 +17,7 @@ export async function GET(
 
     const poll = await PollRepository.getPollById(pollId);
     if (!poll) {
-        return NextResponse.json(
-            { error: "Poll not found" },
-            { status: 404 }
-        );
+        return NextResponse.json({ error: "Poll not found" }, { status: 404 });
     }
 
     return NextResponse.json({ poll });

@@ -7,7 +7,7 @@ export async function GET(
 ) {
     const awaitedParams = await params;
     const pollId = awaitedParams.slug;
-    
+
     try {
         const updatedPoll: Poll = {
             id: 1,
@@ -23,13 +23,18 @@ export async function GET(
                     voteCount: 25,
                     color: "bg-gray-300",
                 },
-                {id: 4, text: "I don't know", voteCount: 0, color: "bg-gray-200" },
+                {
+                    id: 4,
+                    text: "I don't know",
+                    voteCount: 0,
+                    color: "bg-gray-200",
+                },
             ],
         };
 
         // Broadcast the updated poll data to all connected clients
         broadcastPollUpdate(pollId, updatedPoll);
-        
+
         return Response.json({ success: true, poll: updatedPoll });
     } catch {
         return Response.json({ error: "Failed to vote" }, { status: 500 });

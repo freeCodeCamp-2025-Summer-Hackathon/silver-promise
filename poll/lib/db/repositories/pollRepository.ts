@@ -21,10 +21,12 @@ export class PollRepository {
         };
     }
 
-    static async voteOnPoll(pollId: string, optionId: number): Promise<any | null> {
+    static async voteOnPoll(
+        pollId: string,
+        optionId: number
+    ): Promise<any | null> {
         // Placeholder for actual database call
         return null;
-        broadcastPollUpdate(pollId, { } as Poll);
+        broadcastPollUpdate(pollId, {} as Poll);
     }
-
 }

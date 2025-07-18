@@ -21,7 +21,9 @@ export async function GET(
 
             // Confirm initial connection
             controller.enqueue(
-                encoder.encode(`data: {"type": "connected", "pollId": "${pollId}"}\n\n`)
+                encoder.encode(
+                    `data: {"type": "connected", "pollId": "${pollId}"}\n\n`
+                )
             );
 
             // Keep-alive every 30 seconds
@@ -46,20 +48,19 @@ export async function GET(
                     connections.delete(connectionId);
                 }
             });
-        }
+        },
     });
 
     return new Response(stream, {
         headers: {
             "Content-Type": "text/event-stream",
             "Cache-Control": "no-cache",
-            "Connection": "keep-alive",
+            Connection: "keep-alive",
             "Access-Control-Allow-Origin": "*",
             "Access-Control-Allow-Headers": "Cache-Control",
         },
     });
 }
-
 
 export function broadcastPollUpdate(pollId: string, pollData: Poll) {
     const encoder = new TextEncoder();
@@ -67,15 +68,13 @@ export function broadcastPollUpdate(pollId: string, pollData: Poll) {
         type: "poll_update",
         pollId,
         data: pollData,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
     });
 
     connections.forEach((controller, connectionId) => {
         if (connectionId.startsWith(pollId)) {
             try {
-                controller.enqueue(
-                    encoder.encode(`data: ${message}\n\n`)
-                );
+                controller.enqueue(encoder.encode(`data: ${message}\n\n`));
             } catch {
                 connections.delete(connectionId);
             }
