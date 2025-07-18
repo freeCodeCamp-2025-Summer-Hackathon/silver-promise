@@ -1,4 +1,4 @@
-export interface Poll {
+export interface PollResult {
     id: number;
     title: string;
     question: string;
@@ -9,4 +9,10 @@ export interface Poll {
         voteCount: number;
         color: string;
     }[];
+}
+
+export type Poll = PollResult & {
+    status: string;
+    createdAt: Date;
+    authorId: number;
 }

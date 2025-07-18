@@ -14,7 +14,7 @@ export async function POST(request: Request) {
     try {
         const { pollId, optionId } = schema.parse(body);
 
-        const poll = await PollRepository.getPollById(pollId);
+        const poll = await PollRepository.getPollById(Number(pollId));
         if (!poll) {
             return NextResponse.json(
                 { error: "Poll not found" },

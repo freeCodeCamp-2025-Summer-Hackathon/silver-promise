@@ -19,7 +19,7 @@ export interface UserLoginPayload extends BaseUserPayload {
 }
 
 export interface User extends BaseUser {
-    id: string;
+    id: number;
     username: string;
     email: string;
     country: string;

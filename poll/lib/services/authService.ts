@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { UserRepository } from "@/lib/db/repositories/userRepository";
+import { User } from "@/lib/types/User";
 
 /**
  * Service class for handling authentication-related operations.
@@ -130,10 +131,10 @@ export class AuthService {
     static verifyToken(token: string) {
         try {
             return jwt.verify(token, process.env.JWT_SECRET!) as {
-                userId: string;
+                userId: number;
                 username: string;
                 email: string;
-                country?: string;
+                country: string;
                 iat: number;
                 exp: number;
             };
@@ -147,7 +148,7 @@ export class AuthService {
      * @param token - The JWT token.
      * @returns The user object if the token is valid, otherwise `null`.
      */
-    static async getCurrentUser(token: string) {
+    static resolveUserFromToken(token: string): User | null {
         const decoded = this.verifyToken(token);
 
         if (!decoded) {

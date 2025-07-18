@@ -1,4 +1,4 @@
-import { Poll } from "@/lib/types/Poll";
+import { PollResult } from "@/lib/types/Poll";
 import { NextRequest } from "next/server";
 
 // Map to manage all active SSE connections
@@ -62,7 +62,7 @@ export async function GET(
     });
 }
 
-export function broadcastPollUpdate(pollId: string, pollData: Poll) {
+export function broadcastPollUpdate(pollId: string, pollData: PollResult) {
     const encoder = new TextEncoder();
     const message = JSON.stringify({
         type: "poll_update",

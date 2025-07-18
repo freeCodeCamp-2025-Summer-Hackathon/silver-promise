@@ -2,20 +2,20 @@
 
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
-import { useSearchParams } from "next/navigation";
-import { Poll } from "@/lib/types/Poll";
+import { PollResult } from "@/lib/types/Poll";
 import React from "react";
+import { useParams } from "next/navigation";
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 export default function PollResultPage() {
-    const searchParams = useSearchParams();
-    const pollId = searchParams.get("poll_id");
-    const [poll, setPoll] = React.useState<Poll | null>(null);
+    const [poll, setPoll] = React.useState<PollResult | null>(null);
     const [totalVotes, setTotalVotes] = React.useState(0);
+
+    const pollId = useParams<{ slug: string }>().slug;
 
     // Load poll results based on pollId
     React.useEffect(() => {
-        async function fetchPollResults(pollId: number) {
+        async function fetchPollResults() {
             try {
                 const response = await fetch(`/api/polls/${pollId}/results`);
                 if (!response.ok) {
@@ -29,10 +29,8 @@ export default function PollResultPage() {
             }
         }
 
-        if (!pollId) return;
-
         // Initial load
-        fetchPollResults(Number(pollId));
+        fetchPollResults();
 
         // Setup SSE for real-time updates
         const eventSource = new EventSource(`/api/polls/${pollId}/sse`);
@@ -81,7 +79,7 @@ export default function PollResultPage() {
      * Calculate the total number of votes from the poll results.
      * @param results - Array of poll results to calculate total votes
      */
-    function calculateTotalVotes(results: Poll["results"]) {
+    function calculateTotalVotes(results: PollResult["results"]) {
         const total = results.reduce(
             (sum, option) => sum + option.voteCount,
             0
