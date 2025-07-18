@@ -2,26 +2,102 @@
 
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
-
+import { useSearchParams } from "next/navigation";
+import { Poll } from "@/lib/types/Poll";
+import React from "react";
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 export default function PollResultPage() {
-    const poll = {
-        question: "What part of the application would you like to work on?",
-        description: "A poll about user dev preference",
-        results: [
-            { id: 1, text: "Frontend", voteCount: 99, color: "bg-red-400" },
-            { id: 2, text: "Backend", voteCount: 36, color: "bg-cyan-400" },
-            {
-                id: 3,
-                text: "I can do both",
-                voteCount: 25,
-                color: "bg-gray-300",
-            },
-        ],
-    };
+    const searchParams = useSearchParams();
+    const pollId = searchParams.get("poll_id");
+    const [poll, setPoll] = React.useState<Poll | null>(null);
+    const [totalVotes, setTotalVotes] = React.useState(0);
 
-    const totalVotes = poll.results.reduce((sum, r) => sum + r.voteCount, 0);
+    // Load poll results based on pollId
+    React.useEffect(() => {
+        async function fetchPollResults(pollId: number) {
+            try {
+                const response = await fetch(`/api/polls/${pollId}/results`);
+                if (!response.ok) {
+                    throw new Error("Failed to fetch poll results");
+                }
+                const data = await response.json();
+                setPoll(data.poll);
+                calculateTotalVotes(data.poll.results);
+            } catch (error) {
+                console.error("Error fetching poll results:", error);
+            }
+        }
+
+        if (!pollId) return;
+
+        // Initial load
+        fetchPollResults(Number(pollId));
+
+        // Setup SSE for real-time updates
+        const eventSource = new EventSource(`/api/polls/${pollId}/sse`);
+
+        eventSource.onopen = () => {
+            console.log("SSE Connection opened");
+        };
+
+        eventSource.onmessage = (event) => {
+            try {
+                const message = JSON.parse(event.data);
+
+                switch (message.type) {
+                    case "connected":
+                        console.log("SSE Connected to poll:", message.pollId);
+                        break;
+
+                    case "poll_update":
+                        setPoll(message.data);
+                        if (message.data.results) {
+                            calculateTotalVotes(message.data.results);
+                        }
+                        break;
+
+                    default:
+                        console.log("Unknown message type:", message.type);
+                }
+            } catch (error) {
+                console.error("Error parsing SSE message:", error);
+            }
+        };
+
+        eventSource.onerror = (error) => {
+            console.error("SSE Error:", error);
+            eventSource.close();
+        };
+
+        // Cleanup
+        return () => {
+            console.log("Closing SSE connection");
+            eventSource.close();
+        };
+    }, [pollId]);
+
+    /**
+     * Calculate the total number of votes from the poll results.
+     * @param results - Array of poll results to calculate total votes
+     */
+    function calculateTotalVotes(results: Poll["results"]) {
+        const total = results.reduce(
+            (sum, option) => sum + option.voteCount,
+            0
+        );
+        setTotalVotes(total);
+    }
+
+    if (!poll) {
+        return (
+            <section className="bg-panel-background min-h-screen w-full p-10">
+                <div className="text-foreground text-center text-xl font-semibold">
+                    Loading poll results...
+                </div>
+            </section>
+        );
+    }
 
     return (
         <section className="bg-panel-background min-h-screen w-full p-10">
