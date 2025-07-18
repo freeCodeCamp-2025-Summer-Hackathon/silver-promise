@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
             const httpResponse = Response.json(response);
             httpResponse.headers.set(
                 "Set-Cookie",
-                `auth-token=${result.token}; HttpOnly; Path=/; Max-Age=${2 * 24 * 60 * 60}; SameSite=Strict`
+                `auth-token=${result.token}; Path=/; Max-Age=${2 * 24 * 60 * 60}; SameSite=Strict`
             );
 
             return httpResponse;
