@@ -1,6 +1,4 @@
-export interface BaseUser {
-
-}
+export interface BaseUser {}
 
 export interface BaseUserPayload {
     password: string;

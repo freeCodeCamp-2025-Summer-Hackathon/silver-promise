@@ -14,7 +14,10 @@ export async function POST(request: NextRequest) {
             return Response.json(response, { status: 400 });
         }
 
-        const result = await AuthService.validateLogin(userIdentifier, password);
+        const result = await AuthService.validateLogin(
+            userIdentifier,
+            password
+        );
 
         if (result.success) {
             const response: LoginResponse = {

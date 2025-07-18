@@ -15,14 +15,14 @@ export interface RegisterResponse extends BaseResponse {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface LogoutResponse extends BaseResponse { }
+export interface LogoutResponse extends BaseResponse {}
 
 export interface MeResponseData extends BaseResponse {
     user?: User;
 }
 
 export interface PollResultResponse extends BaseResponse {
-    poll? : {
+    poll?: {
         title: string;
         question: string;
         description: string;
@@ -32,5 +32,5 @@ export interface PollResultResponse extends BaseResponse {
             voteCount: number;
             color: string;
         }[];
-    }
+    };
 }

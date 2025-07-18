@@ -60,11 +60,11 @@ export class AuthService {
 
     /**
      * Registers a new user with the provided username, email, country, and password.
-     * 
+     *
      * This method checks for existing users by email and username to prevent duplicates.
      * If the email or username is already in use, it returns a failure response with an appropriate message.
      * Otherwise, it hashes the password, creates a new user record, and returns a success response with the user's details.
-     * 
+     *
      * @param username - The desired username for the new user.
      * @param email - The email address for the new user.
      * @param country - The country of the new user.

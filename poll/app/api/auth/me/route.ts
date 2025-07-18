@@ -9,7 +9,10 @@ export async function GET(request: NextRequest) {
         const token = request.cookies.get("auth-token")?.value;
 
         if (!token) {
-            const response: MeResponseData = { success: false, message: "No token provided", };
+            const response: MeResponseData = {
+                success: false,
+                message: "No token provided",
+            };
             return Response.json(response, { status: 401 });
         }
 
