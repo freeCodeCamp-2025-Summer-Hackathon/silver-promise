@@ -1,4 +1,4 @@
-import { Poll } from "@/lib/types/Poll";
+import { PollResult } from "@/lib/types/Poll";
 import { broadcastPollUpdate } from "@/app/api/polls/[slug]/sse/route";
 
 export async function GET(
@@ -9,7 +9,7 @@ export async function GET(
     const pollId = awaitedParams.slug;
 
     try {
-        const updatedPoll: Poll = {
+        const updatedPoll: PollResult = {
             id: 1,
             question: "What part of the application would you like to work on?",
             description: "A poll about user dev preference",
