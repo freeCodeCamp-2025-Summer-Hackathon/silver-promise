@@ -1,6 +1,5 @@
 "use client";
 
-import { SideNavbar } from "@/app/ui-components/navbars/side-navbar";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -33,7 +32,7 @@ export default function PollDetailPage() {
             {/* <SideNavbar /> */}
 
             {/* Main Content */}
-            <section className="bg-cards-background m-4 flex-1 rounded-2xl p-6">
+            <section className="bg-panel-background m-4 flex-1 rounded-2xl p-6">
                 <div className="flex flex-col gap-6">
                     {/* Page Header */}
                     <div>
@@ -44,12 +43,12 @@ export default function PollDetailPage() {
                     </div>
 
                     {/* Poll Container */}
-                    <div className="max-w-3xl rounded-xl bg-white p-6 shadow">
+                    <div className="max-w-3xl rounded-xl bg-table-background p-6 shadow">
                         <div className="mb-6 space-y-1">
                             <h2 className="text-xl font-semibold">
                                 {poll.question}
                             </h2>
-                            <p className="text-sm text-gray-700">
+                            <p className="text-sm text-cards-foreground">
                                 {poll.description}
                             </p>
                         </div>
@@ -58,7 +57,7 @@ export default function PollDetailPage() {
                             {poll.options.map((opt, idx) => (
                                 <div
                                     key={opt.id}
-                                    className="flex items-center justify-between rounded-lg bg-gray-100 px-4 py-3"
+                                    className="flex items-center justify-between rounded-lg bg-voting-option-background px-4 py-3"
                                 >
                                     <span className="font-medium">
                                         {idx + 1}. {opt.text}
