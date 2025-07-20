@@ -43,12 +43,12 @@ export default function PollDetailPage() {
                     </div>
 
                     {/* Poll Container */}
-                    <div className="max-w-3xl rounded-xl bg-table-background p-6 shadow">
+                    <div className="bg-table-background max-w-3xl rounded-xl p-6 shadow">
                         <div className="mb-6 space-y-1">
                             <h2 className="text-xl font-semibold">
                                 {poll.question}
                             </h2>
-                            <p className="text-sm text-cards-foreground">
+                            <p className="text-cards-foreground text-sm">
                                 {poll.description}
                             </p>
                         </div>
@@ -57,7 +57,7 @@ export default function PollDetailPage() {
                             {poll.options.map((opt, idx) => (
                                 <div
                                     key={opt.id}
-                                    className="flex items-center justify-between rounded-lg bg-voting-option-background px-4 py-3"
+                                    className="bg-voting-option-background flex items-center justify-between rounded-lg px-4 py-3"
                                 >
                                     <span className="font-medium">
                                         {idx + 1}. {opt.text}
