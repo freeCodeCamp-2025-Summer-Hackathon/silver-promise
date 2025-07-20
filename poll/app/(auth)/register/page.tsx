@@ -7,48 +7,134 @@ import FloatingLabelSelectInput from "@/app/ui-components/inputs/FloatingLabelSe
 import { countries } from "@/lib/countries";
 import Image from "next/image";
 import Link from "@/app/ui-components/buttons/Link";
-import { useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
+import { useAuth } from "@/lib/contexts/AuthContext";
+import { useRouter } from "next/navigation";
+import ErrorAlert from "@/app/ui-components/alerts/Error";
 
 export default function Register() {
-    const [formData, setFormData] = useState({
-        username: "",
-        email: "",
+    const router = useRouter();
+    const { login, isLoading, user } = useAuth();
+
+    // Validate password match
+    const [passwordInput, setPasswordInput] = useState({
         password: "",
         confirmPassword: "",
     });
 
+    // Error state for password match validation
     const [errors, setErrors] = useState({
         passwordMatch: false,
     });
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Error messages for already existing user or other errors
+    const [errorMessage, setErrorMessage] = useState("");
+    const [isErrorVisible, setIsErrorVisible] = useState(false);
+
+    // Validate email format
+    function validateEmail(email: string): boolean {
+        return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
+    }
+
+    // Redirect to dashboard if user is logged in
+    useEffect(() => {
+        if (!isLoading && user) {
+            router.push("/dashboard");
+        }
+    }, [user, isLoading, router]);
+
+    // UI indicator for form submission
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    function handlePasswordInputChange(e: React.ChangeEvent<HTMLInputElement>) {
         const { name, value } = e.target;
-        setFormData((prev) => ({
+        setPasswordInput((prev) => ({
             ...prev,
             [name]: value,
         }));
 
-        if (name === "password" || name === "confirmPassword") {
-            const password = name === "password" ? value : formData.password;
-            const confirmPassword =
-                name === "confirmPassword" ? value : formData.confirmPassword;
+        const password = name === "password" ? value : passwordInput.password;
+        const confirmPassword =
+            name === "confirmPassword" ? value : passwordInput.confirmPassword;
 
-            setErrors((prev) => ({
-                ...prev,
-                passwordMatch:
-                    password !== confirmPassword && confirmPassword !== "",
-            }));
-        }
-    };
+        setErrors((prev) => ({
+            ...prev,
+            passwordMatch:
+                password !== confirmPassword && confirmPassword !== "",
+        }));
+    }
 
-    const handleSubmit = (e: React.FormEvent) => {
+    async function handleSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault();
+        setIsSubmitting(true);
+        setIsErrorVisible(false);
+        setErrorMessage("");
 
-        if (formData.password !== formData.confirmPassword) {
-            setErrors((prev) => ({ ...prev, passwordMatch: true }));
-            return;
+        try {
+            const formData = new FormData(e.currentTarget);
+            const data = {
+                username: formData.get("username") as string,
+                email: formData.get("email") as string,
+                country: formData.get("country") as string,
+                password: formData.get("password") as string,
+                confirmPassword: formData.get("confirmPassword") as string,
+            };
+
+            if (data.password !== data.confirmPassword) {
+                setErrors((prev) => ({ ...prev, passwordMatch: true }));
+                return;
+            }
+
+            if (!validateEmail(data.email)) {
+                setErrorMessage("Invalid email format\n");
+                setIsErrorVisible(true);
+                return;
+            }
+
+            const response = await fetch("/api/auth/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            });
+            if (response.ok) {
+                const loginResponse = await fetch("/api/auth/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        userIdentifier: data.email,
+                        password: data.password,
+                    }),
+                });
+
+                if (loginResponse.ok) {
+                    const loginResponseData = await loginResponse.json();
+                    login(loginResponseData.user);
+                } else {
+                    const errorData = await loginResponse.json();
+                    setErrorMessage(errorData.message || "Login failed");
+                    setIsErrorVisible(true);
+                }
+            } else {
+                const errorData = await response.json();
+                setErrorMessage(errorData.message || "Registration failed");
+                setIsErrorVisible(true);
+            }
+        } catch {
+            setErrorMessage("Network error. Please try again later.");
+            setIsErrorVisible(true);
+        } finally {
+            setIsSubmitting(false);
         }
-    };
+    }
+
+    // Do not render if the user is logged in
+    if (user) {
+        return null;
+    }
 
     return (
         <div className="flex h-screen bg-inherit p-24">
@@ -62,22 +148,25 @@ export default function Register() {
                         Already have an account?{" "}
                         <Link href="/login">Log in</Link>
                     </p>
+                    <div
+                        id="error-container"
+                        className="mb-4 rounded-lg border-2 border-red-500 text-red-500"
+                        hidden={!isErrorVisible}
+                    >
+                        <ErrorAlert id="error-alert" message={errorMessage} />
+                    </div>
                     <div className="flex flex-col space-y-4 bg-inherit">
                         <FloatingLabelInput
                             label="Username"
                             name="username"
                             required
-                            onChange={handleInputChange}
                             type="text"
-                            value={formData.username}
                         />
                         <FloatingLabelInput
                             label="Email"
                             name="email"
-                            onChange={handleInputChange}
                             type="email"
                             required
-                            value={formData.email}
                         />
                         <FloatingLabelSelectInput
                             label="Country"
@@ -88,23 +177,28 @@ export default function Register() {
                         <FloatingLabelInput
                             label="Password"
                             name="password"
-                            onChange={handleInputChange}
+                            onChange={handlePasswordInputChange}
                             type="password"
-                            value={formData.password}
+                            value={passwordInput.password}
                             required
                         />
                         <FloatingLabelInputValidation
                             type="password"
                             label="Confirm Password"
                             name="confirmPassword"
-                            value={formData.confirmPassword}
-                            onChange={handleInputChange}
+                            value={passwordInput.confirmPassword}
+                            onChange={handlePasswordInputChange}
                             errorMessage="Passwords do not match"
                             isInvalid={errors.passwordMatch}
                         />
                         <PrimaryButtonWithArrowRight
-                            label="Register"
+                            label={
+                                isSubmitting
+                                    ? "Creating Account..."
+                                    : "Register"
+                            }
                             type="submit"
+                            disabled={isSubmitting}
                         />
                     </div>
                 </form>
