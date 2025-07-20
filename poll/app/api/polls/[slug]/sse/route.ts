@@ -1,53 +1,53 @@
-import { PollResult } from "@/lib/types/Poll";
 import { NextRequest } from "next/server";
-
-// Map to manage all active SSE connections
-const connections = new Map<string, ReadableStreamDefaultController>();
+import { SSEService } from "@/lib/services/sseService";
 
 export async function GET(
     request: NextRequest,
-    { params }: { params: { slug: string } }
+    { params }: { params: Promise<{ slug: string }> }
 ) {
     const awaitedParams = await params;
     const pollId = awaitedParams.slug;
 
+    console.log(`New SSE connection request for poll: ${pollId}`);
+
     const stream = new ReadableStream({
         start(controller) {
-            // Add connection to map
-            const connectionId = `${pollId}-${Date.now()}`;
-            connections.set(connectionId, controller);
+            const connectionId = `poll-${pollId}-${Date.now()}`;
 
-            const encoder = new TextEncoder();
+            // Add to singleton service
+            SSEService.addConnection(connectionId, controller, `poll:${pollId}`);
 
-            // Confirm initial connection
-            controller.enqueue(
-                encoder.encode(
-                    `data: {"type": "connected", "pollId": "${pollId}"}\n\n`
-                )
-            );
+            // Send initial connection message
+            try {
+                const encoder = new TextEncoder();
+                controller.enqueue(
+                    encoder.encode(`data: ${JSON.stringify({
+                        type: "connected",
+                        connectionId,
+                        pollId,
+                        timestamp: new Date().toISOString()
+                    })}\n\n`)
+                );
+            } catch (error) {
+                console.error("Failed to send initial message:", error);
+            }
 
             // Keep-alive every 30 seconds
             const keepAlive = setInterval(() => {
-                try {
-                    controller.enqueue(encoder.encode(`: keep-alive\n\n`));
-                } catch {
+                if (!SSEService.sendKeepAlive(connectionId)) {
                     clearInterval(keepAlive);
-                    connections.delete(connectionId);
                 }
             }, 30000);
 
             // Handle connection close
             request.signal.addEventListener("close", () => {
-                console.log(`SSE connection closed for poll ${pollId}`);
+                console.log(`SSE connection closed for connection ${connectionId}`);
                 clearInterval(keepAlive);
-                connections.delete(connectionId);
-                try {
-                    controller.close();
-                } catch {
-                    // Connection already closed
-                    connections.delete(connectionId);
-                }
+                SSEService.removeConnection(connectionId);
             });
+
+            // Log current state
+            console.log("Current SSE state:", SSEService.getDebugInfo());
         },
     });
 
@@ -59,25 +59,5 @@ export async function GET(
             "Access-Control-Allow-Origin": "*",
             "Access-Control-Allow-Headers": "Cache-Control",
         },
-    });
-}
-
-export function broadcastPollUpdate(pollId: string, pollData: PollResult) {
-    const encoder = new TextEncoder();
-    const message = JSON.stringify({
-        type: "poll_update",
-        pollId,
-        data: pollData,
-        timestamp: new Date().toISOString(),
-    });
-
-    connections.forEach((controller, connectionId) => {
-        if (connectionId.startsWith(pollId)) {
-            try {
-                controller.enqueue(encoder.encode(`data: ${message}\n\n`));
-            } catch {
-                connections.delete(connectionId);
-            }
-        }
     });
 }

@@ -1,8 +1,12 @@
-import { broadcastPollUpdate } from "@/app/api/polls/[slug]/sse/route";
+import { SSEService } from "@/lib/services/sseService";
 import { Poll, PollResult } from "@/lib/types/Poll";
 
 export class PollRepository {
     static async getPollById(pollId: number): Promise<PollResult | null> {
+        if (!pollId) {
+            return null;
+        }
+
         return {
             id: 1,
             question: "What part of the application would you like to work on?",
@@ -24,10 +28,14 @@ export class PollRepository {
     static async voteOnPoll(
         pollId: string,
         optionId: number
-    ): Promise<any | null> {
+    ): Promise<unknown | null> {
+        if (!pollId || !optionId) {
+            return null;
+        }
+
         // Placeholder for actual database call
         return null;
-        broadcastPollUpdate(pollId, {} as PollResult);
+        SSEService.broadcastToTopic(`poll:${pollId}`, "poll_update", {} as PollResult);
     }
 
     static async getPollsByUserId(userId: number): Promise<Poll[]> {
