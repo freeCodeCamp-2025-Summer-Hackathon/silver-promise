@@ -19,6 +19,10 @@ export default function PollDetailPage() {
     };
 
     const handleVote = (optionId: string) => {
+        if (!optionId) {
+            toast.error("Please select an option to vote!");
+            return;
+        }
         setSubmitting(true);
         setTimeout(() => {
             toast.success("✅ Vote submitted!");

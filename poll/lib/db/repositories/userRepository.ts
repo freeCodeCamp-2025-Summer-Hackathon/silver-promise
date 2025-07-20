@@ -1,10 +1,12 @@
+import { UserWithPassword } from "@/lib/types/User";
+
 export class UserRepository {
     static async findByEmailOrUsername(
         identifier: string
-    ): Promise<any | null> {
+    ): Promise<UserWithPassword | null> {
         // Test user with password "pwd"
         return {
-            id: "123",
+            id: 123,
             username: "test-user",
             email: "test@gmail.com",
             country: "us",
@@ -19,12 +21,20 @@ export class UserRepository {
         }
     }
 
-    static async findByEmail(email: string): Promise<any | null> {
+    static async findByEmail(email: string): Promise<UserWithPassword | null> {
+        if (!email) {
+            return null;
+        }
+
         return null; // Simulate no user found
         throw new Error("Not implemented");
     }
 
-    static async findByUsername(username: string): Promise<any | null> {
+    static async findByUsername(username: string): Promise<UserWithPassword | null> {
+        if (!username) {
+            return null;
+        }
+
         return null; // Simulate no user found
         throw new Error("Not implemented");
     }
@@ -34,10 +44,10 @@ export class UserRepository {
         email: string;
         country: string;
         passwordHash: string;
-    }): Promise<any | null> {
+    }): Promise<UserWithPassword | null> {
         // Simulate user creation
         return {
-            id: "123",
+            id: 123,
             ...userData,
         };
     }

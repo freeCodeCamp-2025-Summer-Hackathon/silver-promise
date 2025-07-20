@@ -3,7 +3,7 @@ import { PollRepository } from "@/lib/db/repositories/pollRepository";
 
 export async function GET(
     request: NextRequest,
-    { params }: { params: { slug: string } }
+    { params }: { params: Promise<{ slug: string }> }
 ) {
     const awaitedParams = await params;
     const pollId = awaitedParams.slug;
@@ -15,7 +15,7 @@ export async function GET(
         );
     }
 
-    const poll = await PollRepository.getPollById(pollId);
+    const poll = await PollRepository.getPollById(Number(pollId));
     if (!poll) {
         return NextResponse.json({ error: "Poll not found" }, { status: 404 });
     }

@@ -1,4 +1,4 @@
-export interface BaseUser {}
+export type BaseUser = object
 
 export interface BaseUserPayload {
     password: string;
@@ -23,4 +23,8 @@ export interface User extends BaseUser {
     username: string;
     email: string;
     country: string;
+}
+
+export interface UserWithPassword extends User {
+    passwordHash: string;
 }
