@@ -1,10 +1,18 @@
-import { LoginResponseData } from "@/lib/types/Responses";
 import { NextRequest } from "next/server";
 import { AuthService } from "@/lib/services/authService";
+import { LoginResponse } from "@/lib/types/Responses";
 
 export async function POST(request: NextRequest) {
     try {
         const { userIdentifier, password } = await request.json();
+
+        if (!userIdentifier || !password) {
+            const response: LoginResponse = {
+                success: false,
+                message: "Email/username and password are required",
+            };
+            return Response.json(response, { status: 400 });
+        }
 
         const result = await AuthService.validateLogin(
             userIdentifier,
@@ -12,34 +20,32 @@ export async function POST(request: NextRequest) {
         );
 
         if (result.success) {
-            const responseData: LoginResponseData = {
+            const response: LoginResponse = {
                 success: true,
                 message: "Login successful",
                 user: result.user,
+                token: result.token,
             };
 
-            const response = Response.json(responseData, { status: 200 });
-
-            response.headers.set(
+            const httpResponse = Response.json(response);
+            httpResponse.headers.set(
                 "Set-Cookie",
-                `auth-token=${result.token}; HttpOnly; Path=/; Max-Age=${24 * 60 * 60}; Secure=${process.env.NODE_ENV === "production"}; SameSite=Lax`
+                `auth-token=${result.token}; Path=/; Max-Age=${2 * 24 * 60 * 60}; SameSite=Strict`
             );
 
-            return response;
+            return httpResponse;
         } else {
-            const responseData: LoginResponseData = {
+            const response: LoginResponse = {
                 success: false,
                 message: result.message,
             };
-
-            return Response.json(responseData, { status: 401 });
+            return Response.json(response, { status: 401 });
         }
     } catch {
-        const responseData: LoginResponseData = {
+        const response: LoginResponse = {
             success: false,
             message: "Internal server error",
         };
-
-        return Response.json(responseData, { status: 500 });
+        return Response.json(response, { status: 500 });
     }
 }

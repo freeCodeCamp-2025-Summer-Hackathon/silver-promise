@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { UserRepository } from "@/lib/db/repositories/userRepository";
+import { User } from "@/lib/types/User";
 
 /**
  * Service class for handling authentication-related operations.
@@ -59,6 +60,69 @@ export class AuthService {
     }
 
     /**
+     * Registers a new user with the provided username, email, country, and password.
+     *
+     * This method checks for existing users by email and username to prevent duplicates.
+     * If the email or username is already in use, it returns a failure response with an appropriate message.
+     * Otherwise, it hashes the password, creates a new user record, and returns a success response with the user's details.
+     *
+     * @param username - The desired username for the new user.
+     * @param email - The email address for the new user.
+     * @param country - The country of the new user.
+     * @param password - The plaintext password to be hashed and stored.
+     * @returns An object indicating success or failure, a message, and (on success) the registered user's details.
+     */
+    static async registerUser(
+        username: string,
+        email: string,
+        country: string,
+        password: string
+    ) {
+        let existingUser = await UserRepository.findByEmail(email);
+        if (existingUser) {
+            return {
+                success: false,
+                message: "Email already in use",
+            };
+        }
+
+        existingUser = await UserRepository.findByUsername(username);
+        if (existingUser) {
+            return {
+                success: false,
+                message: "Username already in use",
+            };
+        }
+
+        const passwordHash = await bcrypt.hash(password, 12);
+
+        const newUser = await UserRepository.create({
+            username,
+            email,
+            country,
+            passwordHash,
+        });
+
+        if (!newUser) {
+            return {
+                success: false,
+                message: "Failed to create user",
+            };
+        }
+
+        return {
+            success: true,
+            message: "User registered successfully",
+            user: {
+                id: newUser.id,
+                username: newUser.username,
+                email: newUser.email,
+                country: newUser.country,
+            },
+        };
+    }
+
+    /**
      * Verifies a JWT token.
      *
      * @param token - The JWT token to verify.
@@ -67,10 +131,10 @@ export class AuthService {
     static verifyToken(token: string) {
         try {
             return jwt.verify(token, process.env.JWT_SECRET!) as {
-                userId: string;
+                userId: number;
                 username: string;
                 email: string;
-                country?: string;
+                country: string;
                 iat: number;
                 exp: number;
             };
@@ -84,7 +148,7 @@ export class AuthService {
      * @param token - The JWT token.
      * @returns The user object if the token is valid, otherwise `null`.
      */
-    static async getCurrentUser(token: string) {
+    static resolveUserFromToken(token: string): User | null {
         const decoded = this.verifyToken(token);
 
         if (!decoded) {
