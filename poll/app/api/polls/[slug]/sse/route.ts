@@ -15,18 +15,24 @@ export async function GET(
             const connectionId = `poll-${pollId}-${Date.now()}`;
 
             // Add to singleton service
-            SSEService.addConnection(connectionId, controller, `poll:${pollId}`);
+            SSEService.addConnection(
+                connectionId,
+                controller,
+                `poll:${pollId}`
+            );
 
             // Send initial connection message
             try {
                 const encoder = new TextEncoder();
                 controller.enqueue(
-                    encoder.encode(`data: ${JSON.stringify({
-                        type: "connected",
-                        connectionId,
-                        pollId,
-                        timestamp: new Date().toISOString()
-                    })}\n\n`)
+                    encoder.encode(
+                        `data: ${JSON.stringify({
+                            type: "connected",
+                            connectionId,
+                            pollId,
+                            timestamp: new Date().toISOString(),
+                        })}\n\n`
+                    )
                 );
             } catch (error) {
                 console.error("Failed to send initial message:", error);
@@ -41,7 +47,9 @@ export async function GET(
 
             // Handle connection close
             request.signal.addEventListener("close", () => {
-                console.log(`SSE connection closed for connection ${connectionId}`);
+                console.log(
+                    `SSE connection closed for connection ${connectionId}`
+                );
                 clearInterval(keepAlive);
                 SSEService.removeConnection(connectionId);
             });

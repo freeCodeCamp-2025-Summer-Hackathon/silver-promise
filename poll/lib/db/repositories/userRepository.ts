@@ -30,7 +30,9 @@ export class UserRepository {
         throw new Error("Not implemented");
     }
 
-    static async findByUsername(username: string): Promise<UserWithPassword | null> {
+    static async findByUsername(
+        username: string
+    ): Promise<UserWithPassword | null> {
         if (!username) {
             return null;
         }

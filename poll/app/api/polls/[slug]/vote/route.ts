@@ -24,10 +24,7 @@ export async function POST(request: Request) {
 
         const vote = await PollRepository.voteOnPoll(pollId, optionId);
         if (!vote) {
-            return NextResponse.json(
-                { error: "Bad Request" },
-                { status: 400 }
-            );
+            return NextResponse.json({ error: "Bad Request" }, { status: 400 });
         }
 
         return NextResponse.json({ vote });

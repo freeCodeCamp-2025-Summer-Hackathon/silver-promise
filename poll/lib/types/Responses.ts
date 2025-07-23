@@ -23,5 +23,5 @@ export interface MeResponseData extends BaseResponse {
 }
 
 export interface PollResultResponse extends BaseResponse {
-    poll: PollResult
+    poll: PollResult;
 }

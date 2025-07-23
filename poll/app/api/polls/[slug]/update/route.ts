@@ -33,7 +33,11 @@ export async function GET(
         };
 
         // Broadcast the updated poll data to all connected clients
-        SSEService.broadcastToTopic(`poll:${pollId}`, "poll_update", updatedPoll);
+        SSEService.broadcastToTopic(
+            `poll:${pollId}`,
+            "poll_update",
+            updatedPoll
+        );
 
         return Response.json({ success: true, poll: updatedPoll });
     } catch (error) {

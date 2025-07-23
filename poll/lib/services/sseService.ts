@@ -9,7 +9,11 @@ class SSEServiceClass {
     private connections = new Map<string, SSEConnection>();
     private encoder = new TextEncoder();
 
-    addConnection(connectionId: string, controller: ReadableStreamDefaultController, topic: string): void {
+    addConnection(
+        connectionId: string,
+        controller: ReadableStreamDefaultController,
+        topic: string
+    ): void {
         const connection: SSEConnection = {
             id: connectionId,
             controller,
@@ -47,10 +51,14 @@ class SSEServiceClass {
         this.connections.forEach((connection, connectionId) => {
             if (connection.topic === topic) {
                 try {
-                    connection.controller.enqueue(this.encoder.encode(formattedMessage));
+                    connection.controller.enqueue(
+                        this.encoder.encode(formattedMessage)
+                    );
                     sentCount++;
                 } catch (error) {
-                    console.log(`Failed to send to ${connectionId}, removing connection`);
+                    console.log(
+                        `Failed to send to ${connectionId}, removing connection`
+                    );
                     console.error("Error sending message:", error);
                     toRemove.push(connectionId);
                 }
@@ -58,14 +66,15 @@ class SSEServiceClass {
         });
 
         // Clean up failed connections
-        toRemove.forEach(id => this.removeConnection(id));
+        toRemove.forEach((id) => this.removeConnection(id));
         return sentCount;
     }
 
     getConnectionCount(topic?: string): number {
         if (topic) {
-            return Array.from(this.connections.values())
-                .filter(conn => conn.topic === topic).length;
+            return Array.from(this.connections.values()).filter(
+                (conn) => conn.topic === topic
+            ).length;
         }
         return this.connections.size;
     }
@@ -75,7 +84,9 @@ class SSEServiceClass {
         if (!connection) return false;
 
         try {
-            connection.controller.enqueue(this.encoder.encode(': keep-alive\n\n'));
+            connection.controller.enqueue(
+                this.encoder.encode(": keep-alive\n\n")
+            );
             return true;
         } catch {
             this.removeConnection(connectionId);
@@ -86,8 +97,9 @@ class SSEServiceClass {
     // Debug method
     getDebugInfo() {
         const connectionsByTopic: Record<string, number> = {};
-        this.connections.forEach(conn => {
-            connectionsByTopic[conn.topic] = (connectionsByTopic[conn.topic] || 0) + 1;
+        this.connections.forEach((conn) => {
+            connectionsByTopic[conn.topic] =
+                (connectionsByTopic[conn.topic] || 0) + 1;
         });
 
         return {

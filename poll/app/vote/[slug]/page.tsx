@@ -19,8 +19,8 @@ export default async function VotingPage({
     }
 
     return (
-        <div className="bg-cards-background h-screen w-full flex items-center justify-center">
-            <div className="bg-panel-background m-4 h-[calc(100vh-2rem)] w-full rounded-2xl overflow-hidden flex items-center justify-center">
+        <div className="bg-cards-background flex h-screen w-full items-center justify-center">
+            <div className="bg-panel-background m-4 flex h-[calc(100vh-2rem)] w-full items-center justify-center overflow-hidden rounded-2xl">
                 <div className="w-full max-w-3xl p-6">
                     <PollDetailPage pollId={pollId} />
                 </div>

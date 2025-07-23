@@ -9,9 +9,11 @@ interface PollDetailProps {
     pollId?: number;
 }
 
-export default function PollDetailPage({ pollId: propPollId }: PollDetailProps = {}) {
+export default function PollDetailPage({
+    pollId: propPollId,
+}: PollDetailProps = {}) {
     const params = useParams<{ slug: string }>();
-    
+
     const pollId = propPollId || params.slug;
     const [submitting, setSubmitting] = useState(false);
     const [poll, setPoll] = useState<BasePollData | null>(null);
@@ -36,7 +38,6 @@ export default function PollDetailPage({ pollId: propPollId }: PollDetailProps =
         }
 
         fetchPoll();
-
     }, [pollId]);
 
     const handleVote = (optionId: number) => {

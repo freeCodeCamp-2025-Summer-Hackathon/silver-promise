@@ -45,17 +45,24 @@ export class PollRepository {
 
         const updatedPoll = {
             ...poll,
-            results: poll.results.map(result => result.id === optionId ?
-                { ...result, voteCount: result.voteCount + 1 } : result)
+            results: poll.results.map((result) =>
+                result.id === optionId
+                    ? { ...result, voteCount: result.voteCount + 1 }
+                    : result
+            ),
         };
 
         if (updatedPoll == poll) {
-            return false; 
+            return false;
         }
 
-        SSEService.broadcastToTopic(`poll:${pollId}`, "poll_update", updatedPoll);
+        SSEService.broadcastToTopic(
+            `poll:${pollId}`,
+            "poll_update",
+            updatedPoll
+        );
         return true;
-    };
+    }
 
     static async getPollsByUserId(userId: number): Promise<Poll[]> {
         const polls: Poll[] = [];
@@ -101,7 +108,9 @@ export class PollRepository {
         return polls;
     }
 
-    static async getOptionsByPollId(pollId: number): Promise<BasePollData | null> {
+    static async getOptionsByPollId(
+        pollId: number
+    ): Promise<BasePollData | null> {
         if (!pollId) {
             return null;
         }

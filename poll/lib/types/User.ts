@@ -1,4 +1,4 @@
-export type BaseUser = object
+export type BaseUser = object;
 
 export interface BaseUserPayload {
     password: string;

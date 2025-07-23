@@ -11,7 +11,7 @@ export interface Poll extends PollResult {
     status: string;
     createdAt: Date;
     authorId: number;
-};
+}
 
 export interface PollOption {
     id: number;
