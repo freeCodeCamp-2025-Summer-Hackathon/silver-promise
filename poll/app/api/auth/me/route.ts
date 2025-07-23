@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
             id: decoded.userId,
             username: decoded.username,
             email: decoded.email,
-            country: decoded.country || "unknown",
+            country: decoded.country,
         };
 
         const response: MeResponseData = {
