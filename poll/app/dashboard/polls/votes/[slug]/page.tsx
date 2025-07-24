@@ -8,6 +8,8 @@ export default async function VotingPage({
 }) {
     const slug = (await params).slug;
 
+    console.log(slug);
+
     const pollId = await PollRepository.getPollIdBySlug(slug);
 
     if (!pollId) {
@@ -19,11 +21,9 @@ export default async function VotingPage({
     }
 
     return (
-        <div className="bg-cards-background flex h-screen w-full">
-            <div className="bg-panel-background m-4 flex h-[calc(100vh-2rem)] w-full rounded-2xl">
-                <div className="w-full max-w-3xl p-6">
-                    <PollDetailPage pollId={pollId} />
-                </div>
+        <div className="bg-cards-background flex h-screen">
+            <div className="w-ful bg-panel-background m-4 flex h-[calc(100vh-2rem)] w-full rounded-2xl p-6">
+                <PollDetailPage pollId={slug} />
             </div>
         </div>
     );
