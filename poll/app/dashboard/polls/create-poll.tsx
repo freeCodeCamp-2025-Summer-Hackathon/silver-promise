@@ -6,6 +6,7 @@ import { PollList } from "@/app/ui-components/cards/poll-list";
 import { mockApi } from "@/lib/mockApi";
 import { PollData, PollOption, PollTypes } from "@/lib/types/PollTypes";
 import { useAuth } from "@/lib/contexts/AuthContext";
+import { PollRepository } from "@/lib/db/repositories/pollRepository";
 
 // Custom hook to handle clicks outside a specified element
 const useOnClickOutside = <T extends HTMLElement = HTMLElement>(
@@ -231,6 +232,13 @@ export const CreatePoll = () => {
         });
     };
 
+    const handleSetIsPublic = useCallback(() => {
+        setCreatePollValues((currentValues) => ({
+            ...currentValues,
+            isPublic: !currentValues.isPublic,
+        }));
+    }, []);
+
     //this sets the editing state for the single and multiple choice options
     const handleStartEditing = (option: PollOption) => {
         setEditingOptionId(option.id);
@@ -366,7 +374,7 @@ export const CreatePoll = () => {
 
         //this will be replaced with a post request when a real endpoint
         //is provided
-        const newPoll = await mockApi.createPoll(pollData);
+        const newPoll = await PollRepository.createPoll(pollData);
         setAllPolls((prevPolls) => [...prevPolls, newPoll]);
 
         setCreatePollValues({
@@ -431,6 +439,8 @@ export const CreatePoll = () => {
                         createPollValues={createPollValues}
                         editRef={editRef}
                         isEditing={false}
+                        isPublic={createPollValues.isPublic}
+                        setIsPublic={handleSetIsPublic}
                         handleCreatePollValueChange={
                             handleCreatePollValueChange
                         }
@@ -472,6 +482,8 @@ export const CreatePoll = () => {
                         createPollValues={updatingPollData}
                         editRef={editRef}
                         isEditing={true}
+                        isPublic={updatingPollData.isPublic}
+                        setIsPublic={handleSetIsPublic}
                         handleCloseUpdateModal={handleCloseUpdateModal}
                         handleCreatePollValueChange={
                             handleCreatePollValueChange

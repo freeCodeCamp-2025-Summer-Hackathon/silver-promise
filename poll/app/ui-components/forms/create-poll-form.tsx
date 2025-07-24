@@ -16,6 +16,8 @@ interface CreatePollFormProps {
     editingOptionId: string | null;
     editedValue: string;
     isEditing?: boolean;
+    isPublic?: boolean;
+    setIsPublic: React.Dispatch<React.SetStateAction<boolean>>;
     createPollValues: PollData;
     editRef: React.RefObject<HTMLDivElement | null>;
     handleCloseUpdateModal?: () => void;
@@ -56,6 +58,8 @@ export const CreatePollForm: React.FC<CreatePollFormProps> = ({
     editingOptionId,
     editedValue,
     isEditing,
+    isPublic,
+    setIsPublic,
     createPollValues,
     editRef,
     handleCreatePollValueChange,
@@ -79,7 +83,7 @@ export const CreatePollForm: React.FC<CreatePollFormProps> = ({
                     <FloatingLabelInput
                         label="Enter poll title"
                         type="text"
-                        name="pollTitle"
+                        name="title"
                         value={createPollValues.title}
                         onChange={handleCreatePollValueChange}
                     />
@@ -87,7 +91,7 @@ export const CreatePollForm: React.FC<CreatePollFormProps> = ({
                     <FloatingLabelInput
                         label="Write brief description about the poll"
                         type="text"
-                        name="pollDescription"
+                        name="description"
                         value={createPollValues.description}
                         onChange={handleCreatePollValueChange}
                     />
@@ -100,7 +104,7 @@ export const CreatePollForm: React.FC<CreatePollFormProps> = ({
                     <FloatingLabelInput
                         label="Enter poll question"
                         type="text"
-                        name="pollQuestion"
+                        name="question"
                         value={createPollValues.questions[0].question}
                         onChange={handleCreatePollValueChange}
                     />
@@ -293,6 +297,42 @@ export const CreatePollForm: React.FC<CreatePollFormProps> = ({
                                 ></textarea>
                             </div>
                         )}
+                    </div>
+                    <div>
+                        <FloatingLabelInput
+                            label="End Date"
+                            type="date"
+                            name="endAt"
+                            value={createPollValues.endAt || ""}
+                            onChange={handleCreatePollValueChange}
+                        />
+                    </div>
+
+                    <div className="flex items-center space-x-4">
+                        {/* Label */}
+                        <span
+                            className={`text-sm font-medium ${isPublic ? "text-green-600" : "text-gray-500"}`}
+                        >
+                            {isPublic ? "Public" : "Private"}
+                        </span>
+
+                        {/* Switch Container */}
+                        <button
+                            type="button"
+                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                                isPublic ? "bg-green-500" : "bg-gray-300"
+                            }`}
+                            role="switch"
+                            aria-checked={isPublic}
+                            onClick={() => setIsPublic((prev) => !prev)}
+                        >
+                            {/* Toggle Circle */}
+                            <span
+                                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                                    isPublic ? "translate-x-6" : "translate-x-1"
+                                }`}
+                            />
+                        </button>
                     </div>
                 </div>
             </fieldset>

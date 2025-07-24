@@ -29,6 +29,8 @@ export const PollList = ({
     setAllPolls,
     handleUpdateCreatedPoll,
 }: PollListProps) => {
+    console.log(allPolls, "allpolld");
+
     //create a local function to handle poll deletion
     const handleDeletePoll = (index: number) => {
         const isConfirmed = window.confirm(
@@ -72,7 +74,7 @@ export const PollList = ({
 
                     <div className="text-dark-gray mt-4 flex flex-col gap-2 text-sm">
                         {poll.questions.map((question, qIndex) => (
-                            <>
+                            <div key={`${qIndex}-${question.id}`}>
                                 {question.type === PollTypes.SINGLE &&
                                     question.options.map((option) => (
                                         <div
@@ -120,7 +122,7 @@ export const PollList = ({
                                         placeholder="Your answer..."
                                     ></textarea>
                                 )}
-                            </>
+                            </div>
                         ))}
                     </div>
                     <div className="text-dark-gray mt-6 flex items-center justify-between text-xs">
@@ -133,18 +135,23 @@ export const PollList = ({
                             >
                                 <EditIcon />
                             </button>
-                            <button
-                                className="h-5 w-5"
-                                onClick={() => {
-                                    const shareableLink = `${window.location.origin}/dashboard/polls/votes/${encodeURIComponent(poll.title.trim())}`;
-                                    navigator.clipboard.writeText(
-                                        shareableLink
-                                    );
-                                    // alert("Link copied to clipboard!");
-                                }}
-                            >
-                                <ShareIcon />
-                            </button>
+                            {poll.isPublic &&
+                                poll.links &&
+                                poll.links.map((link, index) => (
+                                    <button
+                                        key={index}
+                                        className="h-5 w-5"
+                                        onClick={() => {
+                                            const shareableLink = `${window.location.origin}/dashboard/polls/votes/${encodeURIComponent(link.slug)}`;
+                                            navigator.clipboard.writeText(
+                                                shareableLink
+                                            );
+                                            // alert("Link copied to clipboard!");
+                                        }}
+                                    >
+                                        <ShareIcon />
+                                    </button>
+                                ))}
                             <button
                                 className="block h-5 w-5"
                                 type="button"

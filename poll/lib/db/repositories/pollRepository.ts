@@ -3,8 +3,8 @@ import { Poll, BasePollData, PollResult } from "@/lib/types/Poll";
 import { PollData } from "@/lib/types/PollTypes";
 
 export class PollRepository {
-    static async createPoll(pollData: PollData): Promise<PollData | null> {
-        const response = await fetch("/api/poll/create", {
+    static async createPoll(pollData: PollData): Promise<PollData> {
+        const response = await fetch("/api/polls/create", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -16,7 +16,7 @@ export class PollRepository {
 
         console.log(polls);
 
-        return polls.data;
+        return polls.poll;
     }
 
     static async getPollById(pollId: number): Promise<PollResult | null> {
