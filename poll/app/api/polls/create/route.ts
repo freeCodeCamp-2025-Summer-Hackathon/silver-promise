@@ -1,13 +1,31 @@
+import { PollData } from "@/lib/types/PollTypes";
+import { error } from "console";
+
 export async function POST(request: Request) {
-    const { title, description, options } = await request.json();
+    const pollFormData: PollData = await request.json();
 
-    // Create a new poll (mock implementation)
-    const newPoll = {
-        id: Date.now(),
-        title,
-        description,
-        options,
-    };
+    const { userId, isPublic } = pollFormData;
 
-    return Response.json({ success: true, poll: newPoll });
+    //*******check if user exists on db using********//
+
+    // const existingUser = await prisma.user.findUnique({
+    //     where: {
+    //         id: userId,
+    //     },
+    // });
+
+    // if (!existingUser) {
+    //     return Response.json({
+    //         message: "internal server error",
+    //         error: "No user found",
+    //         success: false,
+    //     });
+    // }
+
+    //***************create new poll*************//
+    // const newPoll: PollData = await prisma.poll.create({
+    //     data: {},
+    // });
+
+    return Response.json({});
 }

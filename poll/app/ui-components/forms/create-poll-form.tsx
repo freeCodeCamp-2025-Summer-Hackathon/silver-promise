@@ -80,7 +80,7 @@ export const CreatePollForm: React.FC<CreatePollFormProps> = ({
                         label="Enter poll title"
                         type="text"
                         name="pollTitle"
-                        value={createPollValues.pollTitle}
+                        value={createPollValues.title}
                         onChange={handleCreatePollValueChange}
                     />
 
@@ -88,7 +88,7 @@ export const CreatePollForm: React.FC<CreatePollFormProps> = ({
                         label="Write brief description about the poll"
                         type="text"
                         name="pollDescription"
-                        value={createPollValues.pollDescription}
+                        value={createPollValues.description}
                         onChange={handleCreatePollValueChange}
                     />
                 </div>
@@ -101,7 +101,7 @@ export const CreatePollForm: React.FC<CreatePollFormProps> = ({
                         label="Enter poll question"
                         type="text"
                         name="pollQuestion"
-                        value={createPollValues.pollQuestion}
+                        value={createPollValues.questions[0].question}
                         onChange={handleCreatePollValueChange}
                     />
                     <FloatingLabelSelectInput

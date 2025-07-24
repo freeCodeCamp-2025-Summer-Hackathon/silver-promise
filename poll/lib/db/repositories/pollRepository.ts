@@ -1,7 +1,24 @@
 import { SSEService } from "@/lib/services/sseService";
 import { Poll, BasePollData, PollResult } from "@/lib/types/Poll";
+import { PollData } from "@/lib/types/PollTypes";
 
 export class PollRepository {
+    static async createPoll(pollData: PollData): Promise<PollData | null> {
+        const response = await fetch("/api/poll/create", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(pollData),
+        });
+
+        const polls = await response.json();
+
+        console.log(polls);
+
+        return polls.data;
+    }
+
     static async getPollById(pollId: number): Promise<PollResult | null> {
         if (!pollId) {
             return null;

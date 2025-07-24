@@ -61,66 +61,67 @@ export const PollList = ({
                     className="mb-6 rounded-lg border border-gray-100 p-4"
                 >
                     <summary className="cursor-pointer font-semibold">
-                        {poll.pollTitle}
+                        {poll.title}
                     </summary>
 
                     <div>
-                        <p className="text-foreground mb-2 mt-4">
-                            {poll.pollQuestion}
-                        </p>
                         <p className="text-cards-foreground">
-                            {poll.pollDescription}
+                            {poll.description}
                         </p>
                     </div>
 
                     <div className="text-dark-gray mt-4 flex flex-col gap-2 text-sm">
-                        {poll.pollType === PollTypes.SINGLE &&
-                            poll.pollOptions.map((option) => (
-                                <div
-                                    key={option.id}
-                                    className="flex items-center"
-                                >
-                                    <input
-                                        type="radio"
-                                        id={`${poll.pollQuestion}-${option.id}`}
-                                        name={`poll-option-${poll.pollQuestion}`}
-                                        value={option.value}
-                                        className="mr-2"
-                                    />
-                                    <label
-                                        htmlFor={`${poll.pollQuestion}-${option.id}`}
-                                    >
-                                        {option.label}
-                                    </label>
-                                </div>
-                            ))}
-                        {poll.pollType === PollTypes.MULTIPLE &&
-                            poll.pollOptions.map((option) => (
-                                <div
-                                    key={option.id}
-                                    className="flex items-center"
-                                >
-                                    <input
-                                        type="checkbox"
-                                        id={`${poll.pollQuestion}-${option.id}`}
-                                        name={`poll-option-${poll.pollQuestion}`}
-                                        value={option.value}
-                                        className="mr-2"
-                                    />
-                                    <label
-                                        htmlFor={`${poll.pollQuestion}-${option.id}`}
-                                    >
-                                        {option.label}
-                                    </label>
-                                </div>
-                            ))}
-                        {poll.pollType === PollTypes.OPEN && (
-                            <textarea
-                                rows={4}
-                                className="w-full rounded border p-2"
-                                placeholder="Your answer..."
-                            ></textarea>
-                        )}
+                        {poll.questions.map((question, qIndex) => (
+                            <>
+                                {question.type === PollTypes.SINGLE &&
+                                    question.options.map((option) => (
+                                        <div
+                                            key={option.id}
+                                            className="flex items-center"
+                                        >
+                                            <input
+                                                type="radio"
+                                                id={`${question.question}-${option.id}`}
+                                                name={`poll-option-${question.question}`}
+                                                value={option.value}
+                                                className="mr-2"
+                                            />
+                                            <label
+                                                htmlFor={`${question.question}-${option.id}`}
+                                            >
+                                                {option.label}
+                                            </label>
+                                        </div>
+                                    ))}
+                                {question.type === PollTypes.MULTIPLE &&
+                                    question.options.map((option) => (
+                                        <div
+                                            key={option.id}
+                                            className="flex items-center"
+                                        >
+                                            <input
+                                                type="checkbox"
+                                                id={`${question.question}-${option.id}`}
+                                                name={`poll-option-${question.question}`}
+                                                value={option.value}
+                                                className="mr-2"
+                                            />
+                                            <label
+                                                htmlFor={`${question.question}-${option.id}`}
+                                            >
+                                                {option.label}
+                                            </label>
+                                        </div>
+                                    ))}
+                                {question.type === PollTypes.OPEN && (
+                                    <textarea
+                                        rows={4}
+                                        className="w-full rounded border p-2"
+                                        placeholder="Your answer..."
+                                    ></textarea>
+                                )}
+                            </>
+                        ))}
                     </div>
                     <div className="text-dark-gray mt-6 flex items-center justify-between text-xs">
                         <div>3hrs ago</div>
@@ -135,7 +136,7 @@ export const PollList = ({
                             <button
                                 className="h-5 w-5"
                                 onClick={() => {
-                                    const shareableLink = `${window.location.origin}/dashboard/polls/votes/${encodeURIComponent(poll.pollTitle.trim())}`;
+                                    const shareableLink = `${window.location.origin}/dashboard/polls/votes/${encodeURIComponent(poll.title.trim())}`;
                                     navigator.clipboard.writeText(
                                         shareableLink
                                     );
