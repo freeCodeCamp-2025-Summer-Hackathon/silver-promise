@@ -1,32 +1,31 @@
 import { SSEService } from "@/lib/services/sseService";
 import { Poll, BasePollData, PollResult } from "@/lib/types/Poll";
+import PollModel from "../models/Poll";
 
 export class PollRepository {
     static async getPollById(pollId: number): Promise<PollResult | null> {
-        if (!pollId) {
+        const poll = await PollModel.findOne({ id: pollId });
+        if (!poll) {
             return null;
         }
 
+        const results = poll.options.map((option: { text: string; votes: number }, index: number) => ({
+            id: index + 1,
+            text: option.text,
+            voteCount: option.votes,
+            color: `bg-color-${index + 1}`
+        }));
+
         return {
-            id: 1,
-            question: "What part of the application would you like to work on?",
-            description: "A poll about user dev preference",
-            title: "Poll Result",
-            results: [
-                { id: 1, text: "Frontend", voteCount: 99, color: "bg-red-400" },
-                { id: 2, text: "Backend", voteCount: 36, color: "bg-cyan-400" },
-                {
-                    id: 3,
-                    text: "I can do both",
-                    voteCount: 25,
-                    color: "bg-gray-300",
-                },
-            ],
-            options: [
-                { id: 1, text: "Frontend" },
-                { id: 2, text: "Backend" },
-                { id: 3, text: "I can do both" },
-            ],
+            id: poll.id,
+            question: poll.question,
+            description: poll.description,
+            title: poll.title,
+            results: results,
+            options: poll.options.map((option: { text: string; votes: number }, index: number) => ({
+                id: index + 1,
+                text: option.text
+            })),
         };
     }
 
@@ -38,73 +37,67 @@ export class PollRepository {
             return false;
         }
 
-        const poll = await this.getPollById(pollId);
+        const poll = await PollModel.findOne({ id: pollId });
         if (!poll) {
             return false;
         }
 
-        const updatedPoll = {
-            ...poll,
-            results: poll.results.map((result) =>
-                result.id === optionId
-                    ? { ...result, voteCount: result.voteCount + 1 }
-                    : result
-            ),
-        };
+        poll.options.forEach((option: { text: string; votes: number }, index: number) => {
+            if (index + 1 === optionId) {
+                option.votes += 1;
+                poll.markModified("options");
+            }
+        });
 
-        if (updatedPoll == poll) {
+        if (!poll.isModified()) {
             return false;
         }
+
+        await poll.save();
 
         SSEService.broadcastToTopic(
             `poll:${pollId}`,
             "poll_update",
-            updatedPoll
+            poll
         );
         return true;
     }
 
     static async getPollsByUserId(userId: number): Promise<Poll[]> {
-        const polls: Poll[] = [];
-        for (let i = 15; i > 0; i--) {
-            const poll: Poll = {
-                id: i,
-                question: `Poll question ${i}`,
-                description: `Poll description ${i}`,
-                title: `Poll ${i}`,
-                status: i % 2 === 0 ? "completed" : "pending",
-                createdAt: new Date(),
-                authorId: userId,
-                results: [
-                    {
-                        id: 1,
-                        text: "Option 1",
-                        voteCount: 0,
-                        color: "bg-red-400",
-                    },
-                    {
-                        id: 2,
-                        text: "Option 2",
-                        voteCount: 0,
-                        color: "bg-cyan-400",
-                    },
-                    {
-                        id: 3,
-                        text: "Option 3",
-                        voteCount: 0,
-                        color: "bg-gray-300",
-                    },
-                ],
-                options: [
-                    { id: 1, text: "Option 1" },
-                    { id: 2, text: "Option 2" },
-                    { id: 3, text: "Option 3" },
-                ],
-            };
-            polls.push(poll);
+        if (!userId) {
+            return [];
         }
 
-        // Placeholder for actual database call
+        const pollsFromDb = await PollModel.find({ authorId: userId });
+        if (!pollsFromDb || pollsFromDb.length === 0) {
+            return [];
+        }
+
+        const polls: Poll[] = [];
+
+        for (const poll of pollsFromDb) {
+            const PollData: Poll = {
+                id: poll.id,
+                question: poll.question,
+                description: poll.description,
+                title: poll.title,
+                status: poll.createdAt < new Date().getTime() - 7 * 24 * 60 * 60 * 1000 ? "completed" : "pending",
+                createdAt: poll.createdAt,
+                authorId: poll.authorId,
+                results: poll.options.map((option: { text: string; votes: number }, index: number) => ({
+                    id: index + 1,
+                    text: option.text,
+                    voteCount: option.votes,
+                    color: `bg-color-${index + 1}`
+                })),
+                options: poll.options.map((option: { text: string }, index: number) => ({
+                    id: index + 1,
+                    text: option.text
+                })),
+            };
+
+            polls.push(PollData);
+        }
         return polls;
     }
 
@@ -115,26 +108,37 @@ export class PollRepository {
             return null;
         }
 
-        return {
-            id: pollId,
-            title: "Sample Poll",
-            description: "This is a sample poll description.",
-            question: "What is your favorite programming language?",
-            options: [
-                { id: 1, text: "JavaScript" },
-                { id: 2, text: "Python" },
-                { id: 3, text: "Java" },
-                { id: 4, text: "C#" },
-            ],
+        const poll = await PollModel.findOne({ id: pollId });
+
+        if (!poll) {
+            return null;
+        }
+
+        const pollData: BasePollData = {
+            id: poll.id,
+            title: poll.title,
+            question: poll.question,
+            description: poll.description,
+            options: poll.options.map((option: { text: string }, index: number) => ({
+                id: index + 1,
+                text: option.text
+            })),
         };
-    }
+
+        return pollData;
+    };
 
     static async getPollIdBySlug(slug: string): Promise<number | null> {
         if (!slug) {
             return null;
         }
 
-        // Placeholder for actual database call
-        return 1;
+        const id = (await PollModel.findOne({ pollLinks: slug })).id;
+
+        if (!id) {
+            return null;
+        }
+
+        return id;
     }
 }

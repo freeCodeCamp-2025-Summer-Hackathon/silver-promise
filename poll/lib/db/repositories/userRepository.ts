@@ -1,24 +1,13 @@
 import { UserWithPassword } from "@/lib/types/User";
+import UserModel from "../models/User";
 
 export class UserRepository {
     static async findByEmailOrUsername(
         identifier: string
     ): Promise<UserWithPassword | null> {
-        // Test user with password "pwd"
-        return {
-            id: 123,
-            username: "test-user",
-            email: "test@gmail.com",
-            country: "us",
-            passwordHash:
-                "$2a$12$RakKdR6NJVzzSrSIFnx2GOn504hY3w5IhvVoEkzrZ7An9Sgls2YXG",
-        };
-
-        if (identifier.includes("@")) {
-            return this.findByEmail(identifier);
-        } else {
-            return this.findByUsername(identifier);
-        }
+        return await UserModel.findOne({
+            $or: [{ email: identifier }, { username: identifier }],
+        }) || null;
     }
 
     static async findByEmail(email: string): Promise<UserWithPassword | null> {
@@ -26,8 +15,7 @@ export class UserRepository {
             return null;
         }
 
-        return null; // Simulate no user found
-        throw new Error("Not implemented");
+        return await UserModel.findOne({ email }) || null;
     }
 
     static async findByUsername(
@@ -37,8 +25,7 @@ export class UserRepository {
             return null;
         }
 
-        return null; // Simulate no user found
-        throw new Error("Not implemented");
+        return await UserModel.findOne({ username }) || null;
     }
 
     static async create(userData: {
@@ -47,10 +34,9 @@ export class UserRepository {
         country: string;
         passwordHash: string;
     }): Promise<UserWithPassword | null> {
-        // Simulate user creation
-        return {
-            id: 123,
-            ...userData,
-        };
+        const id = await UserModel.countDocuments() + 1; // Simple ID generation
+        const newUser = new UserModel({ ...userData, id });
+        await newUser.save();
+        return newUser.toObject() as UserWithPassword;
     }
 }

@@ -16,6 +16,7 @@
         "bcrypt": "^6.0.0",
         "chart.js": "^4.5.0",
         "jsonwebtoken": "^9.0.2",
+        "mongoose": "^8.16.4",
         "next": "15.3.4",
         "prettier-plugin-tailwindcss": "^0.6.13",
         "react": "^19.0.0",

@@ -24,6 +24,6 @@ export async function GET(request: NextRequest) {
     }
 
     // Handle the request with the authenticated user
-    const polls = await PollRepository.getPollsByUserId(user.id);
+    const polls = await PollRepository.getPollsByUserId(Number(user.id));
     return new Response(JSON.stringify(polls), { status: 200 });
 }
