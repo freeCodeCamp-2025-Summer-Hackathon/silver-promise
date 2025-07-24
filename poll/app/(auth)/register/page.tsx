@@ -9,12 +9,14 @@ import Image from "next/image";
 import Link from "@/app/ui-components/buttons/Link";
 import { FormEvent, useEffect, useState } from "react";
 import { useAuth } from "@/lib/contexts/AuthContext";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import ErrorAlert from "@/app/ui-components/alerts/Error";
 
 export default function Register() {
     const router = useRouter();
     const { login, isLoading, user } = useAuth();
+
+    const searchParams = useSearchParams();
 
     // Validate password match
     const [passwordInput, setPasswordInput] = useState({
@@ -36,12 +38,20 @@ export default function Register() {
         return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
     }
 
+    //get the redirect_to param from the current URL
+    const redirectToParam = searchParams.get("redirect_to");
+
+    // Construct the login link with the redirect_to param
+    const loginLinkHref = redirectToParam
+        ? `/login?redirect_to=${encodeURIComponent(redirectToParam)}`
+        : "/login";
+
     // Redirect to dashboard if user is logged in
     useEffect(() => {
         if (!isLoading && user) {
             router.push("/dashboard");
         }
-    }, [user, isLoading, router]);
+    }, [user, isLoading, router, searchParams]);
 
     // UI indicator for form submission
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -146,7 +156,7 @@ export default function Register() {
                     <h1 className="mb-4 text-4xl font-bold">Create Account</h1>
                     <p className="text-sm text-gray-500">
                         Already have an account?{" "}
-                        <Link href="/login">Log in</Link>
+                        <Link href={loginLinkHref}>Log in</Link>
                     </p>
                     <div
                         id="error-container"
