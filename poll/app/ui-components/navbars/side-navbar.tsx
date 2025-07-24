@@ -1,11 +1,9 @@
 "use client";
-import { User } from "@/lib/generated/prisma/wasm";
-import { MeResponseData } from "@/lib/types/Responses";
 import { PlusIcon } from "@/public/svgs/plus";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
 import Image from "next/image";
+import { useAuth } from "@/lib/contexts/AuthContext";
 
 export const SideNavbar = () => {
     const pathname = usePathname();
@@ -15,25 +13,11 @@ export const SideNavbar = () => {
         // { name: "History", href: "/dashboard/history" },
         { name: "Settings", href: "/dashboard/settings" },
     ];
-    const [user, setUser] = useState<User | null>(null);
-
-    useEffect(() => {
-        async function getUser() {
-            const response = await fetch("/api/auth/me");
-            const data = (await response.json()) as MeResponseData;
-
-            if (!data.success) {
-                window.location.href = "/login";
-            }
-
-            setUser(data.user || null);
-        }
-
-        getUser();
-    }, []);
+    const { user, logout } = useAuth();
 
     function handleLogout() {
         document.cookie = "auth-token=; expires=0; path=/;";
+        logout();
         window.location.href = "/login";
     }
 
