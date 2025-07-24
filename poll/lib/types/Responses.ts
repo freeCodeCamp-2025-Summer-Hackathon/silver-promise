@@ -1,4 +1,5 @@
 import { User } from "@/lib/types/User";
+import { PollResult } from "@/lib/types/Poll";
 
 export interface BaseResponse {
     success: boolean;
@@ -22,15 +23,5 @@ export interface MeResponseData extends BaseResponse {
 }
 
 export interface PollResultResponse extends BaseResponse {
-    poll?: {
-        title: string;
-        question: string;
-        description: string;
-        results: {
-            id: number;
-            text: string;
-            voteCount: number;
-            color: string;
-        }[];
-    };
+    poll: PollResult;
 }

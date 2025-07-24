@@ -8,14 +8,7 @@ export async function GET(
     const awaitedParams = await params;
     const pollId = awaitedParams.slug;
 
-    if (!pollId) {
-        return NextResponse.json(
-            { error: "Missing poll_id parameter" },
-            { status: 400 }
-        );
-    }
-
-    const poll = await PollRepository.getPollById(Number(pollId));
+    const poll = await PollRepository.getOptionsByPollId(Number(pollId));
     if (!poll) {
         return NextResponse.json({ error: "Poll not found" }, { status: 404 });
     }

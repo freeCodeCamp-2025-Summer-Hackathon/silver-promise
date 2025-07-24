@@ -1,9 +1,9 @@
 import { PollResult } from "@/lib/types/Poll";
-import { broadcastPollUpdate } from "@/app/api/polls/[slug]/sse/route";
+import { SSEService } from "@/lib/services/sseService";
 
 export async function GET(
     request: Request,
-    { params }: { params: { slug: string } }
+    { params }: { params: Promise<{ slug: string }> }
 ) {
     const awaitedParams = await params;
     const pollId = awaitedParams.slug;
@@ -33,10 +33,15 @@ export async function GET(
         };
 
         // Broadcast the updated poll data to all connected clients
-        broadcastPollUpdate(pollId, updatedPoll);
+        SSEService.broadcastToTopic(
+            `poll:${pollId}`,
+            "poll_update",
+            updatedPoll
+        );
 
         return Response.json({ success: true, poll: updatedPoll });
-    } catch {
+    } catch (error) {
+        console.error("Error broadcasting poll update:", error);
         return Response.json({ error: "Failed to vote" }, { status: 500 });
     }
 }

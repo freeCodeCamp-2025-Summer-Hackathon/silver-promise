@@ -1,8 +1,12 @@
-import { broadcastPollUpdate } from "@/app/api/polls/[slug]/sse/route";
-import { Poll, PollResult } from "@/lib/types/Poll";
+import { SSEService } from "@/lib/services/sseService";
+import { Poll, BasePollData, PollResult } from "@/lib/types/Poll";
 
 export class PollRepository {
     static async getPollById(pollId: number): Promise<PollResult | null> {
+        if (!pollId) {
+            return null;
+        }
+
         return {
             id: 1,
             question: "What part of the application would you like to work on?",
@@ -18,16 +22,46 @@ export class PollRepository {
                     color: "bg-gray-300",
                 },
             ],
+            options: [
+                { id: 1, text: "Frontend" },
+                { id: 2, text: "Backend" },
+                { id: 3, text: "I can do both" },
+            ],
         };
     }
 
     static async voteOnPoll(
-        pollId: string,
+        pollId: number,
         optionId: number
-    ): Promise<any | null> {
-        // Placeholder for actual database call
-        return null;
-        broadcastPollUpdate(pollId, {} as PollResult);
+    ): Promise<boolean> {
+        if (!pollId || !optionId) {
+            return false;
+        }
+
+        const poll = await this.getPollById(pollId);
+        if (!poll) {
+            return false;
+        }
+
+        const updatedPoll = {
+            ...poll,
+            results: poll.results.map((result) =>
+                result.id === optionId
+                    ? { ...result, voteCount: result.voteCount + 1 }
+                    : result
+            ),
+        };
+
+        if (updatedPoll == poll) {
+            return false;
+        }
+
+        SSEService.broadcastToTopic(
+            `poll:${pollId}`,
+            "poll_update",
+            updatedPoll
+        );
+        return true;
     }
 
     static async getPollsByUserId(userId: number): Promise<Poll[]> {
@@ -61,11 +95,46 @@ export class PollRepository {
                         color: "bg-gray-300",
                     },
                 ],
+                options: [
+                    { id: 1, text: "Option 1" },
+                    { id: 2, text: "Option 2" },
+                    { id: 3, text: "Option 3" },
+                ],
             };
             polls.push(poll);
         }
 
         // Placeholder for actual database call
         return polls;
+    }
+
+    static async getOptionsByPollId(
+        pollId: number
+    ): Promise<BasePollData | null> {
+        if (!pollId) {
+            return null;
+        }
+
+        return {
+            id: pollId,
+            title: "Sample Poll",
+            description: "This is a sample poll description.",
+            question: "What is your favorite programming language?",
+            options: [
+                { id: 1, text: "JavaScript" },
+                { id: 2, text: "Python" },
+                { id: 3, text: "Java" },
+                { id: 4, text: "C#" },
+            ],
+        };
+    }
+
+    static async getPollIdBySlug(slug: string): Promise<number | null> {
+        if (!slug) {
+            return null;
+        }
+
+        // Placeholder for actual database call
+        return 1;
     }
 }
