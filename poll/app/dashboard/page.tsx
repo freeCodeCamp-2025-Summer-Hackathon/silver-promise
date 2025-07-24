@@ -5,32 +5,20 @@ import { PendingPollIcon } from "@/public/svgs/pending-poll";
 import { TotalPollsIcon } from "@/public/svgs/total-polls";
 import Link from "@/app/ui-components/buttons/Link";
 import { useEffect, useState } from "react";
-import { User } from "@/lib/types/User";
 import { Poll } from "@/lib/types/Poll";
 import { NavigationButton } from "../ui-components/buttons/NavigationButton";
+import { useAuth } from "@/lib/contexts/AuthContext";
 
 export default function DashboardHome() {
     const entriesPerPage = 5;
 
     const [polls, setPolls] = useState<Poll[]>([]);
-    const [user, setUser] = useState<User | null>(null);
+    const { user } = useAuth();
     const [token, setToken] = useState<string | undefined>(undefined);
     const [page, setPage] = useState(1);
 
     useEffect(() => {
         const fetchData = async () => {
-            const meResponse = await fetch("/api/auth/me");
-
-            if (!meResponse.ok) {
-                document.cookie =
-                    "auth-token=; Path=/; Max-Age=0; SameSite=Lax";
-                document.location.href = "/login";
-            }
-
-            const userData = await meResponse.json();
-            const user = userData.user as User;
-            setUser(user);
-
             if (typeof document !== "undefined") {
                 const t = document.cookie
                     .split("; ")
@@ -52,7 +40,7 @@ export default function DashboardHome() {
             }
         };
         fetchData();
-    }, [token]);
+    }, [token, user]);
 
     // Loading state while user is not present
     if (!user) {
