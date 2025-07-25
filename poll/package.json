@@ -1,6 +1,7 @@
 {
     "name": "poll",
     "version": "0.1.0",
+    "type": "module",
     "private": true,
     "scripts": {
         "dev": "next dev",
@@ -9,7 +10,7 @@
         "lint": "next lint"
     },
     "prisma": {
-        "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+        "seed": "tsx prisma/seed.ts"
     },
     "dependencies": {
         "@prisma/client": "^6.11.1",
@@ -38,6 +39,7 @@
         "prisma": "^6.11.1",
         "tailwindcss": "^4",
         "ts-node": "^10.9.2",
+        "tsx": "^4.20.3",
         "typescript": "^5"
     }
 }

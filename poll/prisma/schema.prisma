@@ -14,9 +14,96 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// User
 model User {
-  id       Int     @id @default(autoincrement())
-  username String  @unique
-  email    String  @unique
-  country  String?
+  id        Int      @id @default(autoincrement())
+  firstName String   @db.VarChar(50)
+  lastName  String   @db.VarChar(50)
+  email     String   @unique @db.VarChar(200)
+  country   String
+  passHash  String   @unique @db.VarChar(255)
+  createdAt DateTime @default(now())
+  isActive  Boolean  @default(true)
+  polls     Poll[]
+  tags      UserTag[]
+  answers   PollAnswer[]
+}
+
+// User Tags
+model UserTag {
+  id     Int  @id @default(autoincrement())
+  author User @relation(fields: [userId], references: [id])
+  userId Int
+}
+
+// User Profiles
+model UserProfile {
+  id        Int      @id @default(autoincrement())
+  bio       String
+  updatedAt DateTime @updatedAt
+}
+
+// Poll
+model Poll {
+  id        BigInt   @id @default(autoincrement())
+  author    User     @relation(fields: [userId], references: [id])
+  userId    Int
+  title     String   @db.VarChar(255)
+  startDate DateTime @default(now())
+  endDate   DateTime
+  isPublic  Boolean
+  links     PollLink[]
+}
+
+// Poll Questions
+model PollQuestion {
+  id         BigInt  @id @default(autoincrement())
+  question   String
+  type       String
+  position   Int
+  isRequired Boolean
+  options    PollOption[]
+  answers    PollAnswer[]
+}
+
+// Poll Options
+model PollOption {
+  id         Int          @id @default(autoincrement())
+  question   PollQuestion @relation(fields: [questionId], references: [id])
+  questionId BigInt
+  option     String
+  position   Int
+}
+
+// Poll Answers
+model PollAnswer {
+  id         Int          @id @default(autoincrement())
+  question   PollQuestion @relation(fields: [questionId], references: [id])
+  questionId BigInt
+  author     User         @relation(fields: [userId], references: [id])
+  userId     Int
+  answer     String
+  sentDate   DateTime
+}
+
+// Poll Links
+model PollLink {
+  id         BigInt   @id @default(autoincrement())
+  linkedPoll Poll     @relation(fields: [pollId], references: [id])
+  pollId     BigInt
+  slug       String
+  createdAt  DateTime @default(now())
+  ExpiresAt  DateTime
+}
+
+// Countries
+model Country {
+  countryCode String @db.VarChar(3)
+  name        String @unique @db.VarChar(35)
+}
+
+// Important Tags
+model ImportantTags {
+  id   Int    @id @default(autoincrement())
+  name String
 }
