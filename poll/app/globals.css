@@ -1,26 +1,76 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+    --background: #ffffff;
+    --foreground: #171717;
+    --cards-background: var(--color-white);
+    --cards-foreground: #7b7b7b;
+    --table-background: var(--color-white);
+    --navigation-background: var(--color-gray-200);
+    --section-header: #7b7b7b;
+    --panel-background: #f7f7f7;
+    --bar-background: var(--color-gray-200);
+    --voting-option-background: var(--color-gray-100);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --font-sans: var(--font-geist-sans);
+    --font-mono: var(--font-geist-mono);
+    --color-soft-red: #e44f4f;
+    --color-soft-red-hover: #dd2323;
+    --color-dark-violet: #522989;
+    --color-dark-violet-hover: #3b1d62;
+    --color-dark-gray: #7b7b7b;
+    --color-cards-background: var(--cards-background);
+    --color-cards-foreground: var(--cards-foreground);
+    --color-table-background: var(--table-background);
+    --color-link: var(--color-blue-500);
+    --color-link-hover: var(--color-blue-600);
+    --color-table-divider: #e0e0e0;
+    --color-navigation-background: var(--navigation-background);
+    --color-section-header: var(--section-header);
+    --color-panel-background: var(--panel-background);
+    --color-bar-background: var(--bar-background);
+    --color-voting-option-background: var(--voting-option-background);
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+    :root {
+        --background: #0a0a0a;
+        --foreground: #ededed;
+        --cards-background: var(--color-gray-700);
+        --cards-foreground: var(--color-gray-400);
+        --table-background: var(--color-gray-800);
+        --navigation-background: var(--color-gray-700);
+        --section-header: var(--color-gray-300);
+        --panel-background: var(--color-gray-900);
+        --bar-background: var(--color-gray-700);
+        --voting-option-background: var(--color-gray-700);
+    }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+    background: var(--background);
+    color: var(--foreground);
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+dialog {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    max-width: 90%;
+    width: 500px;
+}
+
+dialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
 }

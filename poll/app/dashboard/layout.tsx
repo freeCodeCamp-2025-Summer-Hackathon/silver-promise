@@ -1,32 +1,23 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "../globals.css";
 import { SideNavbar } from "../ui-components/navbars/side-navbar";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
 export const metadata: Metadata = {
-  title: "A simple poll app",
-  description: "A simple poll app built with Next.js,Typescript, and Prisma",
+    title: "A simple poll app",
+    description: "A simple poll app built with Next.js,Typescript, and Prisma",
 };
 
 export default function DashboardLayout({
-  children,
+    children,
 }: Readonly<{
-  children: React.ReactNode;
+    children: React.ReactNode;
 }>) {
-  return (
-    <div className="flex">
-      <SideNavbar />
-      {children}
-    </div>
-  );
+    return (
+        <div className="relative flex">
+            <section className="fixed top-0 z-10 h-full">
+                <SideNavbar />
+            </section>
+            <section className="ml-64 w-full">{children}</section>
+        </div>
+    );
 }
