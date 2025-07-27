@@ -5,7 +5,7 @@ import FloatingLabelInput from "@/app/ui-components/inputs/FloatingLabelInput";
 import Image from "next/image";
 import Link from "@/app/ui-components/buttons/Link";
 import { FormEvent, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/contexts/AuthContext";
 import ErrorAlert from "@/app/ui-components/alerts/Error";
 
@@ -24,15 +24,31 @@ export default function LoginPage() {
     const router = useRouter();
     const { login, isLoading, user } = useAuth();
 
+    //hook to access url search params
+    const searchParams = useSearchParams();
+
     const [errorMessage, setErrorMessage] = useState("");
     const [isErrorVisible, setIsErrorVisible] = useState(false);
 
-    // Redirect to dashboard if user is logged in
+    const redirectToParam = searchParams.get("redirect_to");
+
+    //create the signup link with the redirect_to param
+    const signupLinkHref = redirectToParam
+        ? `/register?redirect_to=${encodeURIComponent(redirectToParam)}`
+        : "/register";
+
+    //redirect to dashboard if user is logged in
     useEffect(() => {
         if (!isLoading && user) {
-            router.push("/dashboard");
+            const redirectTo = searchParams.get("redirect_to"); //gets the redirect_to params
+
+            if (redirectTo) {
+                router.push(decodeURIComponent(redirectTo));
+            } else {
+                router.push("/dashboard");
+            }
         }
-    }, [user, isLoading, router]);
+    }, [user, isLoading, router, searchParams]);
 
     /**
      * Handles the login form submission event.
@@ -86,7 +102,7 @@ export default function LoginPage() {
                     <h1 className="mb-4 text-4xl font-bold">Login to Polls</h1>
                     <p className="text-sm text-gray-500">
                         Don&apos;t have an account?{" "}
-                        <Link href="/register">Register</Link>
+                        <Link href={signupLinkHref}>Register</Link>
                     </p>
                     <div
                         id="error-container"

@@ -5,6 +5,8 @@ import { CreatePollForm } from "@/app/ui-components/forms/create-poll-form";
 import { PollList } from "@/app/ui-components/cards/poll-list";
 import { mockApi } from "@/lib/mockApi";
 import { PollData, PollOption, PollTypes } from "@/lib/types/PollTypes";
+import { useAuth } from "@/lib/contexts/AuthContext";
+import { PollRepository } from "@/lib/db/repositories/pollRepository";
 
 // Custom hook to handle clicks outside a specified element
 const useOnClickOutside = <T extends HTMLElement = HTMLElement>(
@@ -65,6 +67,8 @@ export const CreatePoll = () => {
         null
     );
 
+    const { user } = useAuth();
+
     //sets the state of the previous poll type
     const [editingPollType, setEditingPollType] = useState("");
 
@@ -73,11 +77,23 @@ export const CreatePoll = () => {
 
     //init the all the values needed to create a poll
     const [createPollValues, setCreatePollValues] = useState<PollData>({
-        pollTitle: "",
-        pollDescription: "",
-        pollType: "",
-        pollOptions: [],
-        pollQuestion: "",
+        title: "",
+        description: "",
+        questions: [
+            {
+                type: "",
+                question: "",
+                options: [
+                    {
+                        id: "Option1",
+                        value: "Option 1",
+                        label: "Option 1",
+                    },
+                ],
+            },
+        ],
+        startAt: "",
+        endAt: "",
     });
 
     //a state to track the submitted values on each poll
@@ -108,36 +124,54 @@ export const CreatePoll = () => {
         const valueToSet = editedValue.trim();
 
         if (editingOptionId || valueToSet) {
-            //a state setter function that updates the value and label
-            const updateOptions = (
-                setter: React.Dispatch<React.SetStateAction<PollOption[]>>
-            ) => {
-                setter((prev) =>
-                    prev.map((opt) =>
-                        opt.id === editingOptionId
-                            ? { ...opt, label: valueToSet, value: valueToSet }
-                            : opt
-                    )
-                );
-            };
-
-            const type = isEditing ? editingPollType : pollTypeValue;
-
-            if (type === PollTypes.SINGLE) {
-                updateOptions(setSingleChoiceOptions);
-            } else if (type === PollTypes.MULTIPLE) {
-                updateOptions(setMultipleChoiceOptions);
+            if (isEditing) {
+                setUpdatingPollData((prev) => {
+                    if (!prev) return null;
+                    return {
+                        ...prev,
+                        questions: prev.questions.map((qst, index) =>
+                            index === 0
+                                ? {
+                                      ...qst,
+                                      options: qst.options.map((opt) =>
+                                          opt.id === editingOptionId
+                                              ? {
+                                                    ...opt,
+                                                    label: valueToSet,
+                                                    value: valueToSet,
+                                                }
+                                              : opt
+                                      ),
+                                  }
+                                : qst
+                        ),
+                    };
+                });
+            } else {
+                setCreatePollValues((prev) => ({
+                    ...prev,
+                    questions: prev.questions.map((qst, index) =>
+                        index === 0
+                            ? {
+                                  ...qst,
+                                  options: qst.options.map((opt) =>
+                                      opt.id === editingOptionId
+                                          ? {
+                                                ...opt,
+                                                label: valueToSet,
+                                                value: valueToSet,
+                                            }
+                                          : opt
+                                  ),
+                              }
+                            : qst
+                    ),
+                }));
             }
         }
         setEditingOptionId(null);
         setEditedValue("");
-    }, [
-        editingOptionId,
-        editedValue,
-        pollTypeValue,
-        editingPollType,
-        isEditing,
-    ]);
+    }, [editingOptionId, editedValue, isEditing]);
 
     //@ts-expect-error Type 'HTMLDivElement | null' is not assignable to type 'Node'
     useOnClickOutside(editRef, handleUpdateAndExitEditMode);
@@ -154,13 +188,23 @@ export const CreatePoll = () => {
         e: React.MouseEvent<HTMLButtonElement>
     ) => {
         e.preventDefault();
-        const newId = `Option${singleChoiceOptions.length + 1}`;
-        const newOption: PollOption = {
-            id: newId,
-            label: `Option ${singleChoiceOptions.length + 1}`,
-            value: `Option ${singleChoiceOptions.length + 1}`,
-        };
-        setSingleChoiceOptions((prev) => [...prev, newOption]);
+        setCreatePollValues((prev) => {
+            const currentOptions = prev.questions[0]?.options || [];
+            const newId = `Option${currentOptions.length + 1}`;
+            const newOption: PollOption = {
+                id: newId,
+                label: `Option ${currentOptions.length + 1}`,
+                value: `Option ${currentOptions.length + 1}`,
+            };
+            return {
+                ...prev,
+                questions: prev.questions.map((q, index) =>
+                    index === 0
+                        ? { ...q, options: [...currentOptions, newOption] }
+                        : q
+                ),
+            };
+        });
     };
 
     //this function does the same as handleAddSingleChoiceOption
@@ -169,14 +213,31 @@ export const CreatePoll = () => {
         e: React.MouseEvent<HTMLButtonElement>
     ) => {
         e.preventDefault();
-        const newId = `choice${multipleChoiceOptions.length + 1}`;
-        const newChoice: PollOption = {
-            id: newId,
-            label: `choice ${multipleChoiceOptions.length + 1}`,
-            value: `choice ${multipleChoiceOptions.length + 1}`,
-        };
-        setMultipleChoiceOptions((prev) => [...prev, newChoice]);
+        setCreatePollValues((prev) => {
+            const currentOptions = prev.questions[0]?.options || [];
+            const newId = `choice${currentOptions.length + 1}`;
+            const newChoice: PollOption = {
+                id: newId,
+                label: `choice ${currentOptions.length + 1}`,
+                value: `choice ${currentOptions.length + 1}`,
+            };
+            return {
+                ...prev,
+                questions: prev.questions.map((q, index) =>
+                    index === 0
+                        ? { ...q, options: [...currentOptions, newChoice] }
+                        : q
+                ),
+            };
+        });
     };
+
+    const handleSetIsPublic = useCallback(() => {
+        setCreatePollValues((currentValues) => ({
+            ...currentValues,
+            isPublic: !currentValues.isPublic,
+        }));
+    }, []);
 
     //this sets the editing state for the single and multiple choice options
     const handleStartEditing = (option: PollOption) => {
@@ -191,19 +252,24 @@ export const CreatePoll = () => {
         const currentPollData = allPolls[index];
 
         setUpdatingPollData(currentPollData);
-        setEditingPollType(currentPollData.pollType);
 
-        //init single choice and multiple choice options based on the poll being edited
-        if (currentPollData.pollType === PollTypes.SINGLE) {
-            setSingleChoiceOptions(currentPollData.pollOptions);
-            setMultipleChoiceOptions([]);
-        } else if (currentPollData.pollType === PollTypes.MULTIPLE) {
-            setMultipleChoiceOptions(currentPollData.pollOptions);
-            setSingleChoiceOptions([]);
-        } else {
-            setSingleChoiceOptions([]);
-            setMultipleChoiceOptions([]);
-        }
+        currentPollData.questions.map((poll) => {
+            //init single choice and multiple choice options based on the poll being edited
+            if (poll.type === PollTypes.SINGLE) {
+                setSingleChoiceOptions(poll.options);
+                setMultipleChoiceOptions([]);
+            } else if (poll.type === PollTypes.MULTIPLE) {
+                setMultipleChoiceOptions(poll.options);
+                setSingleChoiceOptions([]);
+            } else {
+                setSingleChoiceOptions([]);
+                setMultipleChoiceOptions([]);
+            }
+
+            if (currentPollData.questions.length > 0) {
+                setEditingPollType(currentPollData.questions[0].type);
+            }
+        });
     };
 
     //this closes the updatePoll modal
@@ -217,15 +283,35 @@ export const CreatePoll = () => {
     };
 
     const handleDeleteOption = (id: string) => {
-        const type = isEditing ? editingPollType : pollTypeValue;
-        if (type === PollTypes.SINGLE) {
-            setSingleChoiceOptions((prev) =>
-                prev.filter((opt) => opt.id !== id)
-            );
-        } else if (type === PollTypes.MULTIPLE) {
-            setMultipleChoiceOptions((prev) =>
-                prev.filter((opt) => opt.id !== id)
-            );
+        if (isEditing && updatingPollData) {
+            setUpdatingPollData((prev) => {
+                if (!prev) return null;
+                return {
+                    ...prev,
+                    questions: prev.questions.map((q, index) =>
+                        index === 0
+                            ? {
+                                  ...q,
+                                  options: q.options.filter(
+                                      (opt) => opt.id !== id
+                                  ),
+                              }
+                            : q
+                    ),
+                };
+            });
+        } else {
+            setCreatePollValues((prev) => ({
+                ...prev,
+                questions: prev.questions.map((q, index) =>
+                    index === 0
+                        ? {
+                              ...q,
+                              options: q.options.filter((opt) => opt.id !== id),
+                          }
+                        : q
+                ),
+            }));
         }
     };
 
@@ -236,6 +322,14 @@ export const CreatePoll = () => {
         if (isEditing) {
             setUpdatingPollData((prev) => {
                 if (prev) {
+                    if (name === "question") {
+                        return {
+                            ...prev,
+                            questions: prev.questions.map((q, index) =>
+                                index === 0 ? { ...q, question: value } : q
+                            ),
+                        };
+                    }
                     return {
                         ...prev,
                         [name]: value,
@@ -244,40 +338,55 @@ export const CreatePoll = () => {
                 return prev;
             });
         } else {
-            setCreatePollValues((prev) => ({
-                ...prev,
-                [name]: value,
-            }));
+            setCreatePollValues((prev) => {
+                if (name === "question") {
+                    return {
+                        ...prev,
+                        questions: prev.questions.map((q, index) =>
+                            index === 0 ? { ...q, question: value } : q
+                        ),
+                    };
+                }
+                return {
+                    ...prev,
+                    [name]: value,
+                };
+            });
         }
     };
 
     //creates polls and store them in localstorage
     const handleCreatePoll = async (e: FormEvent<HTMLButtonElement>) => {
         e.preventDefault();
+
         const pollData: PollData = {
-            ...createPollValues,
-            pollType: pollTypeValue as PollTypes,
-            pollOptions:
-                pollTypeValue === PollTypes.SINGLE
-                    ? singleChoiceOptions
-                    : pollTypeValue === PollTypes.MULTIPLE
-                      ? multipleChoiceOptions
-                      : openChoiceOptions,
+            id: createPollValues.id,
+            title: createPollValues.title,
+            description: createPollValues.description,
+            questions: createPollValues.questions,
+            startAt: createPollValues.startAt,
+            endAt: createPollValues.endAt,
+            isPublic: createPollValues.isPublic ?? false,
+            userId: Number(user?.id),
         };
 
         setSubmittedPoll(pollData);
 
         //this will be replaced with a post request when a real endpoint
         //is provided
-        const newPoll = await mockApi.createPoll(pollData);
+        const newPoll = await PollRepository.createPoll(pollData);
         setAllPolls((prevPolls) => [...prevPolls, newPoll]);
 
         setCreatePollValues({
-            pollTitle: "",
-            pollDescription: "",
-            pollType: "",
-            pollOptions: [],
-            pollQuestion: "",
+            title: "",
+            description: "",
+            questions: [
+                {
+                    question: "",
+                    type: "",
+                    options: [],
+                },
+            ],
         });
         setPollTypeValue("");
         setSingleChoiceOptions([
@@ -295,17 +404,13 @@ export const CreatePoll = () => {
     const handleUpdatePoll = async (e: FormEvent<HTMLButtonElement>) => {
         e.preventDefault();
         if (updatingPollData) {
-            const updatedPollOptions =
-                editingPollType === PollTypes.SINGLE
-                    ? singleChoiceOptions
-                    : editingPollType === PollTypes.MULTIPLE
-                      ? multipleChoiceOptions
-                      : openChoiceOptions;
-
             const updatedPoll: PollData = {
-                ...updatingPollData,
-                pollType: editingPollType as PollTypes,
-                pollOptions: updatedPollOptions,
+                title: updatingPollData.title, // Use updatingPollData for title/description
+                description: updatingPollData.description,
+                questions: updatingPollData.questions, // Directly use questions from updatingPollData
+                endAt: updatingPollData.endAt,
+                isPublic: updatingPollData.isPublic ?? false,
+                id: updatingPollData.id,
             };
 
             //this will be replaced with a post request when a real endpoint
@@ -313,9 +418,7 @@ export const CreatePoll = () => {
             await mockApi.updatePoll(updatedPoll);
             setAllPolls((prevPolls) =>
                 prevPolls.map((poll) =>
-                    poll.pollTitle === updatedPoll.pollTitle
-                        ? updatedPoll
-                        : poll
+                    poll.title === updatedPoll.title ? updatedPoll : poll
                 )
             );
             handleCloseUpdateModal();
@@ -336,6 +439,8 @@ export const CreatePoll = () => {
                         createPollValues={createPollValues}
                         editRef={editRef}
                         isEditing={false}
+                        isPublic={createPollValues.isPublic}
+                        setIsPublic={handleSetIsPublic}
                         handleCreatePollValueChange={
                             handleCreatePollValueChange
                         }
@@ -377,6 +482,8 @@ export const CreatePoll = () => {
                         createPollValues={updatingPollData}
                         editRef={editRef}
                         isEditing={true}
+                        isPublic={updatingPollData.isPublic}
+                        setIsPublic={handleSetIsPublic}
                         handleCloseUpdateModal={handleCloseUpdateModal}
                         handleCreatePollValueChange={
                             handleCreatePollValueChange
