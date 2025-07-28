@@ -1,110 +1,206 @@
 import { SSEService } from "@/lib/services/sseService";
-import { Poll, BasePollData, PollResult } from "@/lib/types/Poll";
+import {
+    Poll,
+    BasePollData,
+    PollResult,
+    PollOption,
+    PollType,
+} from "@/lib/types/Poll";
+import PollModel from "../models/Poll";
 
 export class PollRepository {
-    static async getPollById(pollId: number): Promise<PollResult | null> {
-        if (!pollId) {
+    static async deletePoll(pollId: number): Promise<boolean> {
+        const result = await PollModel.deleteOne({ id: pollId });
+        return result.deletedCount === 1;
+    }
+
+    static async updatePoll(
+        pollId: number,
+        updatedPollData: {
+            title: string;
+            description: string;
+            question: string;
+            options: PollOption[];
+            type: PollType;
+        }
+    ): Promise<BasePollData | null> {
+        const poll = await PollModel.findOne({ id: pollId });
+        if (!poll) {
             return null;
         }
 
+        poll.title = updatedPollData.title;
+        poll.description = updatedPollData.description;
+        poll.question = updatedPollData.question;
+        poll.options = updatedPollData.options
+            .sort((a, b) => a.id - b.id)
+            .map((option) => ({
+                text: option.text,
+                votes: poll.options[option.id]?.votes || 0,
+            }));
+        poll.type = updatedPollData.type || PollType.SINGLE;
+        poll.markModified();
+        await poll.save();
+
         return {
-            id: 1,
-            question: "What part of the application would you like to work on?",
-            description: "A poll about user dev preference",
-            title: "Poll Result",
-            results: [
-                { id: 1, text: "Frontend", voteCount: 99, color: "bg-red-400" },
-                { id: 2, text: "Backend", voteCount: 36, color: "bg-cyan-400" },
-                {
-                    id: 3,
-                    text: "I can do both",
-                    voteCount: 25,
-                    color: "bg-gray-300",
-                },
-            ],
-            options: [
-                { id: 1, text: "Frontend" },
-                { id: 2, text: "Backend" },
-                { id: 3, text: "I can do both" },
-            ],
+            id: poll.id,
+            question: poll.question,
+            description: poll.description,
+            title: poll.title,
+            options: poll.options.map(
+                (option: { text: string }, index: number) => ({
+                    id: index + 1,
+                    text: option.text,
+                })
+            ),
+            type: poll.type,
+        };
+    }
+    static async getPollById(pollId: number): Promise<PollResult | null> {
+        const poll = await PollModel.findOne({ id: pollId });
+        if (!poll) {
+            return null;
+        }
+
+        const results = poll.options.map(
+            (option: { text: string; votes: number }, index: number) => ({
+                id: index + 1,
+                text: option.text,
+                voteCount: option.votes,
+                color: `bg-color-${index + 1}`,
+            })
+        );
+
+        return {
+            id: poll.id,
+            question: poll.question,
+            description: poll.description,
+            title: poll.title,
+            results: results,
+            options: poll.options.map(
+                (option: { text: string; votes: number }, index: number) => ({
+                    id: index + 1,
+                    text: option.text,
+                })
+            ),
+            type: poll.type,
+        };
+    }
+
+    static async getFullPollById(pollId: number): Promise<Poll | null> {
+        const poll = await PollModel.findOne({ id: pollId });
+        if (!poll) {
+            return null;
+        }
+
+        const results = poll.options.map(
+            (option: { text: string; votes: number }, index: number) => ({
+                id: index + 1,
+                text: option.text,
+                voteCount: option.votes,
+                color: `bg-color-${index + 1}`,
+            })
+        );
+
+        return {
+            id: poll.id,
+            question: poll.question,
+            description: poll.description,
+            title: poll.title,
+            results: results,
+            options: poll.options.map(
+                (option: { text: string; votes: number }, index: number) => ({
+                    id: index + 1,
+                    text: option.text,
+                })
+            ),
+            type: poll.type as PollType,
+            status: poll.status || "pending",
+            createdAt: poll.createdAt,
+            authorId: poll.authorId,
         };
     }
 
     static async voteOnPoll(
         pollId: number,
-        optionId: number
+        optionId?: number,
+        optionIds?: number[]
     ): Promise<boolean> {
-        if (!pollId || !optionId) {
+        if (!pollId || (!optionId && !optionIds)) {
             return false;
         }
 
-        const poll = await this.getPollById(pollId);
+        const poll = await PollModel.findOne({ id: pollId });
         if (!poll) {
             return false;
         }
 
-        const updatedPoll = {
-            ...poll,
-            results: poll.results.map((result) =>
-                result.id === optionId
-                    ? { ...result, voteCount: result.voteCount + 1 }
-                    : result
-            ),
-        };
+        poll.options.forEach(
+            (option: { text: string; votes: number }, index: number) => {
+                if (optionIds?.includes(index + 1) || optionId === index + 1) {
+                    option.votes += 1;
+                    poll.markModified();
+                }
+            }
+        );
 
-        if (updatedPoll == poll) {
+        if (!poll.isModified()) {
             return false;
         }
 
-        SSEService.broadcastToTopic(
-            `poll:${pollId}`,
-            "poll_update",
-            updatedPoll
-        );
+        await poll.save();
+
+        SSEService.broadcastToTopic(`poll:${pollId}`, "poll_update", poll);
         return true;
     }
 
     static async getPollsByUserId(userId: number): Promise<Poll[]> {
-        const polls: Poll[] = [];
-        for (let i = 15; i > 0; i--) {
-            const poll: Poll = {
-                id: i,
-                question: `Poll question ${i}`,
-                description: `Poll description ${i}`,
-                title: `Poll ${i}`,
-                status: i % 2 === 0 ? "completed" : "pending",
-                createdAt: new Date(),
-                authorId: userId,
-                results: [
-                    {
-                        id: 1,
-                        text: "Option 1",
-                        voteCount: 0,
-                        color: "bg-red-400",
-                    },
-                    {
-                        id: 2,
-                        text: "Option 2",
-                        voteCount: 0,
-                        color: "bg-cyan-400",
-                    },
-                    {
-                        id: 3,
-                        text: "Option 3",
-                        voteCount: 0,
-                        color: "bg-gray-300",
-                    },
-                ],
-                options: [
-                    { id: 1, text: "Option 1" },
-                    { id: 2, text: "Option 2" },
-                    { id: 3, text: "Option 3" },
-                ],
-            };
-            polls.push(poll);
+        if (!userId) {
+            return [];
         }
 
-        // Placeholder for actual database call
+        const pollsFromDb = await PollModel.find({ authorId: userId });
+        if (!pollsFromDb || pollsFromDb.length === 0) {
+            return [];
+        }
+
+        const polls: Poll[] = [];
+
+        for (const poll of pollsFromDb) {
+            const PollData: Poll = {
+                id: poll.id,
+                question: poll.question,
+                description: poll.description,
+                title: poll.title,
+                status:
+                    poll.createdAt <
+                    new Date().getTime() - 7 * 24 * 60 * 60 * 1000
+                        ? "completed"
+                        : "pending",
+                createdAt: poll.createdAt,
+                authorId: poll.authorId,
+                results: poll.options.map(
+                    (
+                        option: { text: string; votes: number },
+                        index: number
+                    ) => ({
+                        id: index + 1,
+                        text: option.text,
+                        voteCount: option.votes,
+                        color: `bg-color-${index + 1}`,
+                    })
+                ),
+                options: poll.options.map(
+                    (option: { text: string }, index: number) => ({
+                        id: index + 1,
+                        text: option.text,
+                    })
+                ),
+                type: poll.type as PollType,
+            };
+
+            polls.push(PollData);
+        }
         return polls;
     }
 
@@ -115,18 +211,27 @@ export class PollRepository {
             return null;
         }
 
-        return {
-            id: pollId,
-            title: "Sample Poll",
-            description: "This is a sample poll description.",
-            question: "What is your favorite programming language?",
-            options: [
-                { id: 1, text: "JavaScript" },
-                { id: 2, text: "Python" },
-                { id: 3, text: "Java" },
-                { id: 4, text: "C#" },
-            ],
+        const poll = await PollModel.findOne({ id: pollId });
+
+        if (!poll) {
+            return null;
+        }
+
+        const pollData: BasePollData = {
+            id: poll.id,
+            title: poll.title,
+            question: poll.question,
+            description: poll.description,
+            options: poll.options.map(
+                (option: { text: string }, index: number) => ({
+                    id: index + 1,
+                    text: option.text,
+                })
+            ),
+            type: poll.type as PollType,
         };
+
+        return pollData;
     }
 
     static async getPollIdBySlug(slug: string): Promise<number | null> {
@@ -134,7 +239,51 @@ export class PollRepository {
             return null;
         }
 
-        // Placeholder for actual database call
-        return 1;
+        const id = (await PollModel.findOne({ pollLinks: slug }))?.id;
+
+        if (!id) {
+            return null;
+        }
+
+        return id;
+    }
+
+    static async createPoll(
+        pollData: BasePollData,
+        userId: number
+    ): Promise<Poll | null> {
+        if (!pollData || !userId) {
+            return null;
+        }
+
+        const pollId = new Date().getTime();
+
+        let randomSlug = Math.random().toString(36).substring(2, 10);
+        let existingPoll = await PollModel.findOne({ pollLinks: randomSlug });
+
+        while (existingPoll) {
+            randomSlug = Math.random().toString(36).substring(2, 10);
+            existingPoll = await PollModel.findOne({ pollLinks: randomSlug });
+        }
+
+        const newPoll = new PollModel({
+            ...pollData,
+            id: pollId,
+            authorId: userId,
+            createdAt: new Date(),
+            pollLinks: [
+                randomSlug,
+                `poll-${pollId}`,
+                `poll-${pollId}-${randomSlug}`,
+            ],
+        });
+
+        try {
+            await newPoll.save();
+            return newPoll;
+        } catch (error) {
+            console.error("Error creating poll:", error);
+            return null;
+        }
     }
 }

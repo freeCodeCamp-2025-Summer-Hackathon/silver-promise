@@ -1,6 +1,5 @@
 import { Inter } from "next/font/google";
 import ProfileSettingInput from "@/app/ui-components/inputs/ProfileSettingInput";
-import { ChangePasswordForm } from "@/app/ui-components/forms/change-password-form";
 
 const inter = Inter({
     subsets: ["latin"],
@@ -11,7 +10,7 @@ export default function SettingsDashboard() {
         username: "User1234",
         email: "User1234@example.com",
         country: "CountryName",
-        bio: "This is the UI design of a pollcreation application",
+        bio: "This is the UI design of a poll creation application",
     };
 
     return (
@@ -69,3 +68,10 @@ export default function SettingsDashboard() {
         </section>
     );
 }
+
+export const metadata = {
+    title: "Settings - Poll Palls",
+    description:
+        "Manage your account settings, including profile and password.",
+    keywords: ["settings", "profile", "password", "polls"],
+};

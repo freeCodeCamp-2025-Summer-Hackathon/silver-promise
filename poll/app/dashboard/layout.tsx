@@ -3,8 +3,10 @@ import "../globals.css";
 import { SideNavbar } from "../ui-components/navbars/side-navbar";
 
 export const metadata: Metadata = {
-    title: "A simple poll app",
-    description: "A simple poll app built with Next.js,Typescript, and Prisma",
+    title: "Poll Palls - Dashboard",
+    description:
+        "Manage your polls and settings. Create and vote on polls easily.",
+    keywords: ["polls", "dashboard", "settings", "create poll", "vote"],
 };
 
 export default function DashboardLayout({

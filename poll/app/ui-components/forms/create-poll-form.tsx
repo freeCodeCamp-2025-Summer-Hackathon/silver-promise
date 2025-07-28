@@ -7,16 +7,16 @@ import { EditIcon } from "@/public/svgs/edit";
 import { DeleteIcon } from "@/public/svgs/delete";
 import { PrimaryButtonWithArrowRight } from "@/app/ui-components/buttons/PrimaryButton";
 
-import { PollData, PollOption, PollTypes } from "@/lib/types/PollTypes";
+import { Poll, PollOption, PollType } from "@/lib/types/Poll";
 
 interface CreatePollFormProps {
-    pollTypeValue: string;
+    pollTypeValue: PollType;
     singleChoiceOptions: PollOption[];
     multipleChoiceOptions: PollOption[];
-    editingOptionId: string | null;
+    editingOptionId: number | null;
     editedValue: string;
     isEditing?: boolean;
-    createPollValues: PollData;
+    createPollValues: Poll;
     editRef: React.RefObject<HTMLDivElement | null>;
     handleCloseUpdateModal?: () => void;
     handleCreatePollValueChange: (
@@ -26,7 +26,7 @@ interface CreatePollFormProps {
     handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     handleUpdateAndExitEditMode: () => void;
     handleStartEditing: (option: PollOption) => void;
-    handleDeleteOption: (id: string) => void;
+    handleDeleteOption: (id: number) => void;
     handleAddSingleChoiceOption: (
         e: React.MouseEvent<HTMLButtonElement>
     ) => void;
@@ -38,9 +38,8 @@ interface CreatePollFormProps {
 }
 
 const pollType = [
-    { value: PollTypes.SINGLE, label: PollTypes.SINGLE },
-    { value: PollTypes.MULTIPLE, label: PollTypes.MULTIPLE },
-    { value: PollTypes.OPEN, label: PollTypes.OPEN },
+    { value: PollType.SINGLE, label: PollType.SINGLE },
+    { value: PollType.MULTIPLE, label: PollType.MULTIPLE },
 ];
 
 /**
@@ -79,16 +78,16 @@ export const CreatePollForm: React.FC<CreatePollFormProps> = ({
                     <FloatingLabelInput
                         label="Enter poll title"
                         type="text"
-                        name="pollTitle"
-                        value={createPollValues.pollTitle}
+                        name="title"
+                        value={createPollValues.title}
                         onChange={handleCreatePollValueChange}
                     />
 
                     <FloatingLabelInput
                         label="Write brief description about the poll"
                         type="text"
-                        name="pollDescription"
-                        value={createPollValues.pollDescription}
+                        name="description"
+                        value={createPollValues.description}
                         onChange={handleCreatePollValueChange}
                     />
                 </div>
@@ -100,8 +99,8 @@ export const CreatePollForm: React.FC<CreatePollFormProps> = ({
                     <FloatingLabelInput
                         label="Enter poll question"
                         type="text"
-                        name="pollQuestion"
-                        value={createPollValues.pollQuestion}
+                        name="question"
+                        value={createPollValues.question}
                         onChange={handleCreatePollValueChange}
                     />
                     <FloatingLabelSelectInput
@@ -112,8 +111,8 @@ export const CreatePollForm: React.FC<CreatePollFormProps> = ({
                     />
 
                     <div>
-                        {pollTypeValue === PollTypes.SINGLE && (
-                            <div className="text-dark-gray text-sm">
+                        {pollTypeValue === PollType.SINGLE && (
+                            <div className="text-foreground text-sm">
                                 {singleChoiceOptions.map((option) => (
                                     <div
                                         key={option.id}
@@ -121,10 +120,11 @@ export const CreatePollForm: React.FC<CreatePollFormProps> = ({
                                     >
                                         <input
                                             type="radio"
-                                            id={option.id}
-                                            name={PollTypes.SINGLE}
+                                            id={option.id + ""}
+                                            name={PollType.SINGLE}
                                             className="mr-2"
-                                            value={option.value}
+                                            value={option.text}
+                                            disabled
                                         />
                                         {editingOptionId === option.id ? (
                                             <div
@@ -133,7 +133,7 @@ export const CreatePollForm: React.FC<CreatePollFormProps> = ({
                                             >
                                                 <input
                                                     type="text"
-                                                    name="value"
+                                                    name="text"
                                                     value={editedValue}
                                                     onChange={handleInputChange}
                                                     onKeyDown={(e) => {
@@ -151,14 +151,14 @@ export const CreatePollForm: React.FC<CreatePollFormProps> = ({
                                                     onClick={
                                                         handleUpdateAndExitEditMode
                                                     }
-                                                    className="text-blue-500"
+                                                    className="cursor-pointer text-blue-500"
                                                 >
                                                     Update
                                                 </button>
                                             </div>
                                         ) : (
                                             <div className="flex items-center gap-6">
-                                                <p>{option.value}</p>
+                                                <p>{option.text}</p>
                                                 <button
                                                     type="button"
                                                     onClick={() =>
@@ -166,7 +166,8 @@ export const CreatePollForm: React.FC<CreatePollFormProps> = ({
                                                             option
                                                         )
                                                     }
-                                                    className="text-blue-500"
+                                                    className="cursor-pointer text-blue-500 dark:text-lime-600"
+                                                    title="Edit Option"
                                                 >
                                                     <EditIcon />
                                                 </button>
@@ -178,8 +179,9 @@ export const CreatePollForm: React.FC<CreatePollFormProps> = ({
                                                         )
                                                     }
                                                     className="text-red-500"
+                                                    title="Delete Option"
                                                 >
-                                                    <span className="block h-5 w-5">
+                                                    <span className="block h-5 w-5 cursor-pointer">
                                                         <DeleteIcon />
                                                     </span>
                                                 </button>
@@ -191,14 +193,14 @@ export const CreatePollForm: React.FC<CreatePollFormProps> = ({
                                 <button
                                     type="button"
                                     onClick={handleAddSingleChoiceOption}
-                                    className="mt-2 text-blue-500"
+                                    className="mt-2 cursor-pointer text-blue-500"
                                 >
                                     Add options
                                 </button>
                             </div>
                         )}
-                        {pollTypeValue === PollTypes.MULTIPLE && (
-                            <div className="text-dark-gray text-sm">
+                        {pollTypeValue === PollType.MULTIPLE && (
+                            <div className="text-foreground text-sm">
                                 {multipleChoiceOptions.map((option, index) => (
                                     <div
                                         key={index}
@@ -206,10 +208,10 @@ export const CreatePollForm: React.FC<CreatePollFormProps> = ({
                                     >
                                         <input
                                             type="checkbox"
-                                            id={option.id}
-                                            name={PollTypes.MULTIPLE}
+                                            id={option.id + ""}
+                                            name={PollType.MULTIPLE}
                                             className="mr-2"
-                                            value={option.value}
+                                            value={option.text}
                                         />
                                         {editingOptionId === option.id ? (
                                             <div
@@ -218,7 +220,7 @@ export const CreatePollForm: React.FC<CreatePollFormProps> = ({
                                             >
                                                 <input
                                                     type="text"
-                                                    name="value"
+                                                    name="text"
                                                     value={editedValue}
                                                     onChange={handleInputChange}
                                                     onKeyDown={(e) => {
@@ -236,14 +238,14 @@ export const CreatePollForm: React.FC<CreatePollFormProps> = ({
                                                     onClick={
                                                         handleUpdateAndExitEditMode
                                                     }
-                                                    className="text-blue-500"
+                                                    className="cursor-pointer text-blue-500"
                                                 >
                                                     Update
                                                 </button>
                                             </div>
                                         ) : (
                                             <div className="flex items-center gap-6">
-                                                <p>{option.value}</p>
+                                                <p>{option.text}</p>
                                                 <button
                                                     type="button"
                                                     onClick={() =>
@@ -251,7 +253,8 @@ export const CreatePollForm: React.FC<CreatePollFormProps> = ({
                                                             option
                                                         )
                                                     }
-                                                    className="text-blue-500"
+                                                    className="cursor-pointer text-blue-500 dark:text-lime-600"
+                                                    title="Edit Option"
                                                 >
                                                     <EditIcon />
                                                 </button>
@@ -263,8 +266,9 @@ export const CreatePollForm: React.FC<CreatePollFormProps> = ({
                                                         )
                                                     }
                                                     className="text-red-500"
+                                                    title="Delete Option"
                                                 >
-                                                    <span className="block h-5 w-5">
+                                                    <span className="block h-5 w-5 cursor-pointer">
                                                         <DeleteIcon />
                                                     </span>
                                                 </button>
@@ -276,21 +280,10 @@ export const CreatePollForm: React.FC<CreatePollFormProps> = ({
                                 <button
                                     type="button"
                                     onClick={handleAddMultiChoiceOption}
-                                    className="mt-2 text-blue-500"
+                                    className="mt-2 cursor-pointer text-blue-500"
                                 >
                                     Add options
                                 </button>
-                            </div>
-                        )}
-                        {pollTypeValue === PollTypes.OPEN && (
-                            <div className="text-dark-gray text-sm">
-                                <textarea
-                                    className="w-full rounded-xl border border-[#e1e1e1] p-4"
-                                    rows={2}
-                                    cols={10}
-                                    name="value"
-                                    placeholder="Short answer"
-                                ></textarea>
                             </div>
                         )}
                     </div>
@@ -315,7 +308,7 @@ export const CreatePollForm: React.FC<CreatePollFormProps> = ({
             ) : (
                 <div className="mt-6 w-full">
                     <PrimaryButtonWithArrowRight
-                        label="Submit"
+                        label="Create Poll"
                         type="submit"
                         onClick={handleCreatePoll}
                     />

@@ -5,6 +5,7 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { PollResult } from "@/lib/types/Poll";
 import React from "react";
 import { useParams } from "next/navigation";
+import chartColors from "@/lib/chartColors";
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 export default function PollResultPage() {
@@ -49,10 +50,41 @@ export default function PollResultPage() {
                         break;
 
                     case "poll_update":
-                        setPoll(message.data);
-                        if (message.data.results) {
-                            calculateTotalVotes(message.data.results);
-                        }
+                        const poll: PollResult = {
+                            id: message.data.id,
+                            question: message.data.question,
+                            description: message.data.description,
+                            title: message.data.title,
+                            results: message.data.options.map(
+                                (
+                                    option: { text: string; votes: number },
+                                    index: number
+                                ) => ({
+                                    id: index + 1,
+                                    text: option.text,
+                                    voteCount: option.votes,
+                                    color: chartColors[
+                                        index % chartColors.length
+                                    ],
+                                })
+                            ),
+                            options: message.data.options.map(
+                                (
+                                    option: { text: string; votes: number },
+                                    index: number
+                                ) => ({
+                                    id: index + 1,
+                                    text: option.text,
+                                    voteCount: option.votes,
+                                    color: chartColors[
+                                        index % chartColors.length
+                                    ],
+                                })
+                            ),
+                            type: message.data.type,
+                        };
+                        setPoll(poll);
+                        calculateTotalVotes(poll.results);
                         break;
 
                     default:
@@ -137,8 +169,14 @@ export default function PollResultPage() {
                                         </div>
                                         <div className="bg-bar-background h-2 w-full rounded-full">
                                             <div
-                                                className={`h-2 rounded-full ${option.color}`}
-                                                style={{ width: `${percent}%` }}
+                                                className="h-2 rounded-full"
+                                                style={{
+                                                    width: `${percent}%`,
+                                                    backgroundColor:
+                                                        chartColors[
+                                                            option.id - 1
+                                                        ],
+                                                }}
                                             ></div>
                                         </div>
                                         <p className="text-sm text-gray-500">
@@ -170,11 +208,11 @@ export default function PollResultPage() {
                                                 data: poll.results.map(
                                                     (r) => r.voteCount
                                                 ),
-                                                backgroundColor: [
-                                                    "#ef4444",
-                                                    "#06b6d4",
-                                                    "#d1d5db",
-                                                ],
+                                                backgroundColor:
+                                                    chartColors.slice(
+                                                        0,
+                                                        poll.results.length
+                                                    ),
                                                 borderWidth: 0,
                                             },
                                         ],

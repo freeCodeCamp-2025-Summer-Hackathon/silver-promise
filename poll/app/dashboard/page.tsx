@@ -189,6 +189,18 @@ export default function DashboardHome() {
                                             >
                                                 Results
                                             </Link>
+                                            <Link
+                                                href={"#"}
+                                                className="ml-2"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    navigator.clipboard.writeText(
+                                                        `${window.location.origin}/vote/poll-${poll.id}`
+                                                    );
+                                                }}
+                                            >
+                                                Copy Link
+                                            </Link>
                                         </td>
                                     </tr>
                                 ))}
@@ -200,12 +212,9 @@ export default function DashboardHome() {
                     >
                         <p className="text-cards-foreground mt-4 items-center text-sm">
                             Showing{" "}
-                            {polls.length > page * entriesPerPage
-                                ? page * entriesPerPage - entriesPerPage
-                                : (polls.length > entriesPerPage
-                                      ? entriesPerPage * page
-                                      : 0) +
-                                  (polls.length % entriesPerPage)}{" "}
+                            {polls.length === 0
+                                ? 0
+                                : (page - 1) * entriesPerPage + 1}{" "}
                             to{" "}
                             {polls.length > page * entriesPerPage
                                 ? page * entriesPerPage

@@ -1,7 +1,7 @@
 import { CreatePoll } from "./create-poll";
 
 export const metadata = {
-    title: "Polls Dashboard",
+    title: "Dashboard",
     description: "Manage your polls here.",
 };
 

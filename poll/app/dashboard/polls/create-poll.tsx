@@ -3,8 +3,7 @@
 import { useState, useRef, useEffect, useCallback, FormEvent } from "react";
 import { CreatePollForm } from "@/app/ui-components/forms/create-poll-form";
 import { PollList } from "@/app/ui-components/cards/poll-list";
-import { mockApi } from "@/lib/mockApi";
-import { PollData, PollOption, PollTypes } from "@/lib/types/PollTypes";
+import { Poll, PollOption, PollType } from "@/lib/types/Poll";
 
 // Custom hook to handle clicks outside a specified element
 const useOnClickOutside = <T extends HTMLElement = HTMLElement>(
@@ -29,26 +28,28 @@ const useOnClickOutside = <T extends HTMLElement = HTMLElement>(
 };
 
 export const CreatePoll = () => {
-    const [pollTypeValue, setPollTypeValue] = useState("");
+    const [pollTypeValue, setPollTypeValue] = useState<PollType>(
+        PollType.SINGLE
+    );
 
     //sets state for single choice options
     const [singleChoiceOptions, setSingleChoiceOptions] = useState<
         PollOption[]
-    >([{ id: "Option1", label: "Option 1", value: "Option 1" }]);
+    >([{ id: 1, text: "Option 1" }]);
 
     //sets state for multi choice options
     const [multipleChoiceOptions, setMultipleChoiceOptions] = useState<
         PollOption[]
-    >([{ id: "choice1", label: "Choice 1", value: "Choice 1" }]);
+    >([{ id: 1, text: "Choice 1" }]);
 
     //sets state for open choice options
     const [openChoiceOptions] = useState<PollOption[]>([
-        { id: "shortAnswer1", label: "shortAnswer 1", value: "shortAnswer 1" },
+        { id: 1, text: "shortAnswer 1" },
     ]);
 
     //sets the id when the user clicks on the edit Icon button in the
     //single or multiple choice options
-    const [editingOptionId, setEditingOptionId] = useState<string | null>(null);
+    const [editingOptionId, setEditingOptionId] = useState<number | null>(null);
 
     //sets the value of the edited option when the user clicks
     //on the edit icon button for the single or multiple choice option
@@ -61,9 +62,7 @@ export const CreatePoll = () => {
     const editRef = useRef<HTMLDivElement | null>(null);
 
     //sets the state to the current poll data that is about to be updated
-    const [updatingPollData, setUpdatingPollData] = useState<PollData | null>(
-        null
-    );
+    const [updatingPoll, setUpdatingPoll] = useState<Poll | null>(null);
 
     //sets the state of the previous poll type
     const [editingPollType, setEditingPollType] = useState("");
@@ -72,27 +71,45 @@ export const CreatePoll = () => {
     const [isEditing, setIsEditing] = useState(false);
 
     //init the all the values needed to create a poll
-    const [createPollValues, setCreatePollValues] = useState<PollData>({
-        pollTitle: "",
-        pollDescription: "",
-        pollType: "",
-        pollOptions: [],
-        pollQuestion: "",
-    });
+    const [createPollValues, setCreatePollValues] = useState<Poll>({
+        title: "",
+        description: "",
+        type: PollType.SINGLE,
+        options: [],
+        question: "",
+        id: Date.now(), // Unique ID based on current timestamp
+        authorId: 1, // Assuming a default author ID for now
+        createdAt: new Date(),
+        status: "active",
+        pollLinks: [],
+        results: [],
+    } as Poll);
 
     //a state to track the submitted values on each poll
-    const [submittedPoll, setSubmittedPoll] = useState<PollData | null>(null);
+    const [submittedPoll, setSubmittedPoll] = useState<Poll | null>(null);
 
     //adds all the polls to an array object
     //it's like an array of all submitted polls
     //this helps us to manage a list of all submitted polls
-    const [allPolls, setAllPolls] = useState<PollData[]>([]);
+    const [allPolls, setAllPolls] = useState<Poll[]>([]);
 
-    //useEffect to retrieve the stored createPollData after the component renders
+    //useEffect to retrieve the stored createPoll after the component renders
     useEffect(() => {
         const fetchPolls = async () => {
-            const polls = await mockApi.getPolls();
-            setAllPolls(polls);
+            const polls = await fetch("/api/polls", {
+                headers: {
+                    Authorization: `Bearer ${
+                        document.cookie
+                            .split("; ")
+                            .find((cookie) =>
+                                cookie.trim().startsWith("auth-token=")
+                            )
+                            ?.split("=")[1] || ""
+                    }`,
+                },
+            });
+            const data = await polls.json();
+            setAllPolls(data);
         };
         fetchPolls();
     }, [submittedPoll]);
@@ -105,46 +122,35 @@ export const CreatePoll = () => {
      * after update, resets editing state (editingOptionId and editedValue)
      */
     const handleUpdateAndExitEditMode = useCallback(() => {
-        const valueToSet = editedValue.trim();
-
-        if (editingOptionId || valueToSet) {
-            //a state setter function that updates the value and label
-            const updateOptions = (
-                setter: React.Dispatch<React.SetStateAction<PollOption[]>>
-            ) => {
-                setter((prev) =>
-                    prev.map((opt) =>
-                        opt.id === editingOptionId
-                            ? { ...opt, label: valueToSet, value: valueToSet }
-                            : opt
+        if (editingOptionId !== null && editedValue.trim()) {
+            if (pollTypeValue === PollType.SINGLE) {
+                setSingleChoiceOptions((prev) =>
+                    prev.map((option) =>
+                        option.id === editingOptionId
+                            ? { ...option, text: editedValue.trim() }
+                            : option
                     )
                 );
-            };
-
-            const type = isEditing ? editingPollType : pollTypeValue;
-
-            if (type === PollTypes.SINGLE) {
-                updateOptions(setSingleChoiceOptions);
-            } else if (type === PollTypes.MULTIPLE) {
-                updateOptions(setMultipleChoiceOptions);
+            } else if (pollTypeValue === PollType.MULTIPLE) {
+                setMultipleChoiceOptions((prev) =>
+                    prev.map((option) =>
+                        option.id === editingOptionId
+                            ? { ...option, text: editedValue.trim() }
+                            : option
+                    )
+                );
             }
         }
         setEditingOptionId(null);
         setEditedValue("");
-    }, [
-        editingOptionId,
-        editedValue,
-        pollTypeValue,
-        editingPollType,
-        isEditing,
-    ]);
+    }, [editingOptionId, editedValue, pollTypeValue]);
 
     //@ts-expect-error Type 'HTMLDivElement | null' is not assignable to type 'Node'
     useOnClickOutside(editRef, handleUpdateAndExitEditMode);
 
     //we use this to select poll type from dropdown
     const handleSelectPollType = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setPollTypeValue(e.target.value);
+        setPollTypeValue(e.target.value as PollType);
     };
 
     //this function handles adding single choice options
@@ -154,11 +160,10 @@ export const CreatePoll = () => {
         e: React.MouseEvent<HTMLButtonElement>
     ) => {
         e.preventDefault();
-        const newId = `Option${singleChoiceOptions.length + 1}`;
+        const newId = singleChoiceOptions.length + 1;
         const newOption: PollOption = {
             id: newId,
-            label: `Option ${singleChoiceOptions.length + 1}`,
-            value: `Option ${singleChoiceOptions.length + 1}`,
+            text: `Option ${singleChoiceOptions.length + 1}`,
         };
         setSingleChoiceOptions((prev) => [...prev, newOption]);
     };
@@ -169,11 +174,10 @@ export const CreatePoll = () => {
         e: React.MouseEvent<HTMLButtonElement>
     ) => {
         e.preventDefault();
-        const newId = `choice${multipleChoiceOptions.length + 1}`;
+        const newId = multipleChoiceOptions.length + 1;
         const newChoice: PollOption = {
             id: newId,
-            label: `choice ${multipleChoiceOptions.length + 1}`,
-            value: `choice ${multipleChoiceOptions.length + 1}`,
+            text: `Option ${multipleChoiceOptions.length + 1}`,
         };
         setMultipleChoiceOptions((prev) => [...prev, newChoice]);
     };
@@ -181,24 +185,24 @@ export const CreatePoll = () => {
     //this sets the editing state for the single and multiple choice options
     const handleStartEditing = (option: PollOption) => {
         setEditingOptionId(option.id);
-        setEditedValue(option.value);
+        setEditedValue(option.text);
     };
 
     //this handles the updating poll data
     const handleUpdateCreatedPoll = (index: number) => {
         setIsEditing(true);
         isUpdateModalOpenRef.current?.showModal();
-        const currentPollData = allPolls[index];
+        const currentPoll = allPolls[index];
 
-        setUpdatingPollData(currentPollData);
-        setEditingPollType(currentPollData.pollType);
+        setUpdatingPoll(currentPoll);
+        setEditingPollType(currentPoll.type);
 
         //init single choice and multiple choice options based on the poll being edited
-        if (currentPollData.pollType === PollTypes.SINGLE) {
-            setSingleChoiceOptions(currentPollData.pollOptions);
+        if (currentPoll.type === PollType.SINGLE) {
+            setSingleChoiceOptions(currentPoll.options);
             setMultipleChoiceOptions([]);
-        } else if (currentPollData.pollType === PollTypes.MULTIPLE) {
-            setMultipleChoiceOptions(currentPollData.pollOptions);
+        } else if (currentPoll.type === PollType.MULTIPLE) {
+            setMultipleChoiceOptions(currentPoll.options);
             setSingleChoiceOptions([]);
         } else {
             setSingleChoiceOptions([]);
@@ -216,13 +220,13 @@ export const CreatePoll = () => {
         setEditedValue(e.target.value);
     };
 
-    const handleDeleteOption = (id: string) => {
+    const handleDeleteOption = (id: number) => {
         const type = isEditing ? editingPollType : pollTypeValue;
-        if (type === PollTypes.SINGLE) {
+        if (type === PollType.SINGLE) {
             setSingleChoiceOptions((prev) =>
                 prev.filter((opt) => opt.id !== id)
             );
-        } else if (type === PollTypes.MULTIPLE) {
+        } else if (type === PollType.MULTIPLE) {
             setMultipleChoiceOptions((prev) =>
                 prev.filter((opt) => opt.id !== id)
             );
@@ -234,7 +238,7 @@ export const CreatePoll = () => {
     ) => {
         const { name, value } = e.target;
         if (isEditing) {
-            setUpdatingPollData((prev) => {
+            setUpdatingPoll((prev) => {
                 if (prev) {
                     return {
                         ...prev,
@@ -254,13 +258,36 @@ export const CreatePoll = () => {
     //creates polls and store them in localstorage
     const handleCreatePoll = async (e: FormEvent<HTMLButtonElement>) => {
         e.preventDefault();
-        const pollData: PollData = {
+
+        if (isEditing) {
+            handleUpdateAndExitEditMode();
+            return;
+        }
+
+        // Ensure all required fields are filled
+        if (
+            !createPollValues.question ||
+            (pollTypeValue === PollType.SINGLE &&
+                singleChoiceOptions.length <= 1) ||
+            (pollTypeValue === PollType.MULTIPLE &&
+                multipleChoiceOptions.length === 0)
+        ) {
+            alert(
+                "Please fill in the question and at least " +
+                    (pollTypeValue === PollType.SINGLE
+                        ? "2 options"
+                        : "1 option")
+            );
+            return;
+        }
+
+        const pollData: Poll = {
             ...createPollValues,
-            pollType: pollTypeValue as PollTypes,
-            pollOptions:
-                pollTypeValue === PollTypes.SINGLE
+            type: pollTypeValue as PollType,
+            options:
+                pollTypeValue === PollType.SINGLE
                     ? singleChoiceOptions
-                    : pollTypeValue === PollTypes.MULTIPLE
+                    : pollTypeValue === PollType.MULTIPLE
                       ? multipleChoiceOptions
                       : openChoiceOptions,
         };
@@ -269,23 +296,40 @@ export const CreatePoll = () => {
 
         //this will be replaced with a post request when a real endpoint
         //is provided
-        const newPoll = await mockApi.createPoll(pollData);
-        setAllPolls((prevPolls) => [...prevPolls, newPoll]);
+        const newPoll = await fetch("/api/polls/create", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${
+                    document.cookie
+                        .split("; ")
+                        .find((cookie) =>
+                            cookie.trim().startsWith("auth-token=")
+                        )
+                        ?.split("=")[1] || ""
+                }`,
+            },
+            body: JSON.stringify(pollData),
+        });
+        const createdPoll = (await newPoll.json())?.poll;
+        setAllPolls((prevPolls) => [createdPoll, ...prevPolls]);
 
         setCreatePollValues({
-            pollTitle: "",
-            pollDescription: "",
-            pollType: "",
-            pollOptions: [],
-            pollQuestion: "",
-        });
-        setPollTypeValue("");
-        setSingleChoiceOptions([
-            { id: "Option1", label: "Option 1", value: "Option 1" },
-        ]);
-        setMultipleChoiceOptions([
-            { id: "choice1", label: "Choice 1", value: "Choice 1" },
-        ]);
+            title: "",
+            description: "",
+            type: PollType.SINGLE,
+            options: [],
+            question: "",
+            id: Date.now(),
+            authorId: -1,
+            createdAt: new Date(),
+            status: "active",
+            pollLinks: [],
+            results: [],
+        } as Poll);
+        setPollTypeValue(PollType.SINGLE);
+        setSingleChoiceOptions([{ id: 1, text: "Option 1" }]);
+        setMultipleChoiceOptions([{ id: 1, text: "Choice 1" }]);
     };
 
     //this handles updating created poll by
@@ -294,30 +338,51 @@ export const CreatePoll = () => {
     //then update the values with the updated poll values
     const handleUpdatePoll = async (e: FormEvent<HTMLButtonElement>) => {
         e.preventDefault();
-        if (updatingPollData) {
+        if (updatingPoll) {
             const updatedPollOptions =
-                editingPollType === PollTypes.SINGLE
+                editingPollType === PollType.SINGLE
                     ? singleChoiceOptions
-                    : editingPollType === PollTypes.MULTIPLE
+                    : editingPollType === PollType.MULTIPLE
                       ? multipleChoiceOptions
                       : openChoiceOptions;
 
-            const updatedPoll: PollData = {
-                ...updatingPollData,
-                pollType: editingPollType as PollTypes,
-                pollOptions: updatedPollOptions,
+            const updatedPoll: Poll = {
+                ...updatingPoll,
+                type: editingPollType as PollType,
+                options: updatedPollOptions,
             };
 
             //this will be replaced with a post request when a real endpoint
             //is provided
-            await mockApi.updatePoll(updatedPoll);
             setAllPolls((prevPolls) =>
                 prevPolls.map((poll) =>
-                    poll.pollTitle === updatedPoll.pollTitle
-                        ? updatedPoll
+                    poll.id === updatedPoll.id
+                        ? { ...poll, ...updatedPoll }
                         : poll
                 )
             );
+
+            const response = await fetch(`/api/polls/${updatingPoll.id}/edit`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${
+                        document.cookie
+                            .split("; ")
+                            .find((cookie) =>
+                                cookie.trim().startsWith("auth-token=")
+                            )
+                            ?.split("=")[1] || ""
+                    }`,
+                },
+                body: JSON.stringify(updatedPoll),
+            });
+            if (!response.ok) {
+                console.error("Failed to update poll");
+                alert("Failed to update poll");
+                handleCloseUpdateModal();
+                return;
+            }
             handleCloseUpdateModal();
         }
     };
@@ -359,22 +424,20 @@ export const CreatePoll = () => {
                         <PollList
                             allPolls={allPolls}
                             handleUpdateCreatedPoll={handleUpdateCreatedPoll}
-                            setAllPolls={(polls: PollData[]) =>
-                                setAllPolls(polls)
-                            }
+                            setAllPolls={(polls: Poll[]) => setAllPolls(polls)}
                         />
                     )}
                 </div>
             </section>
             <dialog ref={isUpdateModalOpenRef}>
                 <button onClick={handleCloseUpdateModal}>Close</button>
-                {updatingPollData && (
+                {updatingPoll && (
                     <CreatePollForm
-                        pollTypeValue={editingPollType}
+                        pollTypeValue={editingPollType as PollType}
                         singleChoiceOptions={singleChoiceOptions}
                         editingOptionId={editingOptionId}
                         editedValue={editedValue}
-                        createPollValues={updatingPollData}
+                        createPollValues={updatingPoll}
                         editRef={editRef}
                         isEditing={true}
                         handleCloseUpdateModal={handleCloseUpdateModal}
