@@ -33,7 +33,8 @@ export function PrimaryButton({
             className={
                 "from-soft-red to-dark-violet hover:from-soft-red-hover hover:to-dark-violet-hover rounded-2xl bg-gradient-to-r p-2 text-white hover:bg-gradient-to-r hover:transition-colors " +
                 props.className
-            }>
+            }
+        >
             {label}
         </button>
     );

@@ -6,9 +6,9 @@ export async function POST(
     request: Request,
     { params }: { params: Promise<{ slug: string }> }
 ) {
-    const body = await request.json() as PollEditingPayload;
+    const body = (await request.json()) as PollEditingPayload;
     const { title, description, question, options } = body;
-    const type: PollType = body.type as PollType || PollType.SINGLE;
+    const type: PollType = (body.type as PollType) || PollType.SINGLE;
 
     if (!title || !question || !options || options.length <= 1) {
         return new Response("Title, question, and options are required", {

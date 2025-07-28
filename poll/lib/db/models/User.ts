@@ -36,7 +36,7 @@ const schema = new Schema({
         type: [Schema.Types.ObjectId],
         ref: "Poll",
         default: [],
-    }
+    },
 });
 
 export default mongoose.models.User || mongoose.model("User", schema);

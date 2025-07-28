@@ -17,7 +17,8 @@ export async function GET(
     return NextResponse.json({ poll });
 }
 
-export async function DELETE(request: NextRequest,
+export async function DELETE(
+    request: NextRequest,
     { params }: { params: Promise<{ slug: string }> }
 ) {
     const awaitedParams = await params;
