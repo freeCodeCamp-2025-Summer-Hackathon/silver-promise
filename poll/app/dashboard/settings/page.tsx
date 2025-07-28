@@ -68,3 +68,9 @@ export default function SettingsDashboard() {
         </section>
     );
 }
+
+export const metadata = {
+    title: "Settings - Poll Palls",
+    description: "Manage your account settings, including profile and password.",
+    keywords: ["settings", "profile", "password", "polls"],
+};
