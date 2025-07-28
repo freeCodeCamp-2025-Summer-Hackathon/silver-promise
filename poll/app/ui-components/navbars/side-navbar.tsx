@@ -25,7 +25,7 @@ export const SideNavbar = () => {
         <nav className="bg-linear-to-b from-soft-red to-dark-violet flex h-full w-64 flex-col justify-between bg-gray-800 p-4 text-white">
             <section className="flex flex-col gap-6">
                 <div className="">
-                    <h1 className="text-xl font-bold">Poll App</h1>
+                    <h1 className="text-xl font-bold">Poll Palls</h1>
                 </div>
                 <ul className="flex w-full flex-col gap-4 font-bold">
                     <li className="flex w-fit items-center gap-2 rounded-xl bg-white transition-colors hover:bg-white/70">

@@ -50,10 +50,41 @@ export default function PollResultPage() {
                         break;
 
                     case "poll_update":
-                        setPoll(message.data);
-                        if (message.data.results) {
-                            calculateTotalVotes(message.data.results);
-                        }
+                        const poll: PollResult = {
+                            id: message.data.id,
+                            question: message.data.question,
+                            description: message.data.description,
+                            title: message.data.title,
+                            results: message.data.options.map(
+                                (
+                                    option: { text: string; votes: number },
+                                    index: number
+                                ) => ({
+                                    id: index + 1,
+                                    text: option.text,
+                                    voteCount: option.votes,
+                                    color: chartColors[
+                                        index % chartColors.length
+                                    ],
+                                })
+                            ),
+                            options: message.data.options.map(
+                                (
+                                    option: { text: string; votes: number },
+                                    index: number
+                                ) => ({
+                                    id: index + 1,
+                                    text: option.text,
+                                    voteCount: option.votes,
+                                    color: chartColors[
+                                        index % chartColors.length
+                                    ],
+                                })
+                            ),
+                            type: message.data.type,
+                        };
+                        setPoll(poll);
+                        calculateTotalVotes(poll.results);
                         break;
 
                     default:

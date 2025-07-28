@@ -1,7 +1,7 @@
-import { PollResult } from "@/lib/types/Poll";
+import { PollResult, PollType } from "@/lib/types/Poll";
 import { SSEService } from "@/lib/services/sseService";
 
-export async function GET(
+export async function POST(
     request: Request,
     { params }: { params: Promise<{ slug: string }> }
 ) {
@@ -30,6 +30,13 @@ export async function GET(
                     color: "bg-gray-200",
                 },
             ],
+            options: [
+                { id: 1, text: "Frontend" },
+                { id: 2, text: "Backend" },
+                { id: 3, text: "I can do both" },
+                { id: 4, text: "I don't know" },
+            ],
+            type: PollType.SINGLE,
         };
 
         // Broadcast the updated poll data to all connected clients

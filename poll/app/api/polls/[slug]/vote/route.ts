@@ -1,19 +1,28 @@
 import { NextResponse } from "next/server";
-import { z } from "zod";
 import { PollRepository } from "@/lib/db/repositories/pollRepository";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
     const body = await request.json();
-    const schema = z.object({
-        pollId: z.number(),
-        optionId: z.number(),
-    });
+    const { pollId, optionId } = body;
+    let { optionIds } = body;
+
+    if (!pollId || (!optionId && !optionIds)) {
+        return NextResponse.json(
+            { error: "Poll ID and Option ID are required" },
+            { status: 400 }
+        );
+    }
+
+    if (optionIds && !Array.isArray(optionIds)) {
+        return NextResponse.json(
+            { error: "Option IDs must be an array" },
+            { status: 400 }
+        );
+    }
 
     try {
-        const { pollId, optionId } = schema.parse(body);
-
         const poll = await PollRepository.getPollById(Number(pollId));
         if (!poll) {
             return NextResponse.json(
@@ -22,15 +31,20 @@ export async function POST(request: Request) {
             );
         }
 
-        const vote = await PollRepository.voteOnPoll(pollId, optionId);
+        optionIds = optionIds || [optionId];
+
+
+        const vote = await PollRepository.voteOnPoll(pollId, undefined, optionIds);
         if (!vote) {
             return NextResponse.json({ error: "Bad Request" }, { status: 400 });
         }
 
-        return NextResponse.json({ vote });
+        return NextResponse.json({ success: true });
     } catch (error) {
-        if (error instanceof z.ZodError) {
-            return NextResponse.json({ error: error.message }, { status: 500 });
-        }
+        console.error("Error processing vote:", error);
+        return NextResponse.json(
+            { error: "Failed to process vote" },
+            { status: 500 }
+        );
     }
 }

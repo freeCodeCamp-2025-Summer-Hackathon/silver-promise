@@ -7,6 +7,16 @@ export interface PollResult extends BasePollData {
     }[];
 }
 
+export interface PollEditingPayload {
+    id: number;
+    title: string;
+    description: string;
+    question: string;
+    options: PollOption[];
+    type: PollType;
+}
+
+
 export interface Poll extends PollResult {
     status: string;
     createdAt: Date;
@@ -35,4 +45,10 @@ export interface BasePollData {
     question: string;
     description: string;
     options: PollOption[];
+    type: PollType;
+}
+
+export enum PollType {
+    SINGLE = "single",
+    MULTIPLE = "multiple",
 }

@@ -1,4 +1,4 @@
-import PollDetailPage from "@/app/dashboard/polls/votes/[slug]/page";
+import { PollDetailPageWithPollId } from "@/app/dashboard/polls/votes/[slug]/pollVotingPage";
 import { PollRepository } from "@/lib/db/repositories/pollRepository";
 
 export default async function VotingPage({
@@ -22,7 +22,7 @@ export default async function VotingPage({
         <div className="bg-cards-background flex h-screen w-full items-center justify-center">
             <div className="bg-panel-background m-4 flex h-[calc(100vh-2rem)] w-full items-center justify-center overflow-hidden rounded-2xl">
                 <div className="w-full max-w-3xl p-6">
-                    <PollDetailPage pollId={pollId} />
+                    <PollDetailPageWithPollId pollId={pollId} />
                 </div>
             </div>
         </div>

@@ -5,6 +5,7 @@ const schema = new Schema({
         type: Number,
         required: true,
         unique: true,
+        default: () => new Date().getTime(),
     },
     title: {
         type: String,
@@ -47,7 +48,12 @@ const schema = new Schema({
         type: String,
         required: true,
         unique: true,
-    }]
+    }],
+    type: {
+        type: String,
+        enum: ["single", "multiple"],
+        default: "single",
+    },
 });
 
 export default mongoose.models.Poll || mongoose.model("Poll", schema);

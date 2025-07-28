@@ -35,7 +35,8 @@ export const connectToMongo = async () => {
                     { text: "Java", votes: 5 }
                 ],
                 authorId: 1, // User ID 1
-                pollLinks: ["poll-programming-lang-2025"]
+                pollLinks: ["poll-programming-lang-2025", "poll-1"],
+                type: "single",
             },
             {
                 id: 2,
@@ -48,7 +49,8 @@ export const connectToMongo = async () => {
                     { text: "Svelte", votes: 3 }
                 ],
                 authorId: 1, // User ID 1
-                pollLinks: ["poll-best-framework-2025"]
+                pollLinks: ["poll-best-framework-2025", "poll-2"],
+                type: "single"
             },
             {
                 id: 3,
@@ -59,7 +61,8 @@ export const connectToMongo = async () => {
                     { text: "Tea", votes: 18 }
                 ],
                 authorId: 2, // User ID 2
-                pollLinks: ["poll-coffee-tea-2025"]
+                pollLinks: ["poll-coffee-tea-2025"],
+                type: "multiple"
             },
             {
                 id: 4,
@@ -72,18 +75,40 @@ export const connectToMongo = async () => {
                     { text: "Remote Only", votes: 11 }
                 ],
                 authorId: 1, // User ID 1
-                pollLinks: ["poll-work-schedule-2025"]
+                pollLinks: ["poll-work-schedule-2025"],
+                type: "multiple"
             }
         ];
 
-        await Poll.deleteMany({}); // Clear existing polls
-        console.info("Existing polls cleared");
-        const createdPolls = await Poll.insertMany(testPolls);
-        console.log(`${createdPolls.length} test polls created successfully`);
-        return createdPolls;
-
+        if (await Poll.countDocuments({}) == 0) {
+            const createdPolls = await Poll.insertMany(testPolls);
+            console.info(`${createdPolls.length} test polls created successfully`);
+            return createdPolls;
+        }
     } catch (error) {
         console.error("MongoDB connection error:", error);
         throw error;
     }
+
 };
+
+// const prisma = new PrismaClient();
+// export const connectToPrisma = async () => {
+//     try {
+//         if (prisma.$connected) {
+//             console.info("Prisma is already connected");
+//             return;
+//         }
+//         await prisma.$connect();
+//         console.info("Prisma connected successfully");
+//     } catch (error) {
+//         console.error("Prisma connection error:", error);
+//         throw error;
+//     }
+// };
+// export const getPrismaClient = () => {
+//     if (!prisma) {
+//         throw new Error("Prisma client is not initialized");
+//     }
+//     return prisma;
+// };

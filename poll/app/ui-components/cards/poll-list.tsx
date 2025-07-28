@@ -3,14 +3,12 @@
 import { EditIcon } from "@/public/svgs/edit";
 import { DeleteIcon } from "@/public/svgs/delete";
 import { ShareIcon } from "@/public/svgs/share";
-// import { toast } from "react-toastify";
-// import Link from "next/link";
 
-import { PollData, PollTypes } from "@/lib/types/PollTypes";
+import { Poll, PollType } from "@/lib/types/Poll";
 
 interface PollListProps {
-    allPolls: PollData[];
-    setAllPolls: (polls: PollData[]) => void;
+    allPolls: Poll[];
+    setAllPolls: (polls: Poll[]) => void;
     handleUpdateCreatedPoll: (index: number) => void;
 }
 
@@ -30,19 +28,26 @@ export const PollList = ({
     handleUpdateCreatedPoll,
 }: PollListProps) => {
     //create a local function to handle poll deletion
-    const handleDeletePoll = (index: number) => {
+    const handleDeletePoll = async (pollId: number) => {
         const isConfirmed = window.confirm(
             "Are you sure you want to delete this poll?"
         );
         if (isConfirmed) {
-            const updatedPollList = allPolls.filter((_, idx) => idx !== index);
-            setAllPolls(updatedPollList);
-
-            // update localStorage with the new list of polls
-            localStorage.setItem(
-                "createpolldata",
-                JSON.stringify(updatedPollList)
-            );
+            await fetch(`/api/polls/${pollId}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${
+                        document.cookie
+                            .split("; ")
+                            .find((cookie) =>
+                                cookie.trim().startsWith("auth-token=")
+                            )
+                            ?.split("=")[1] || ""
+                    }`,
+                },
+            });
+            setAllPolls(allPolls.filter((poll) => poll.id !== pollId));
         }
     };
 
@@ -61,69 +66,77 @@ export const PollList = ({
                     className="mb-6 rounded-lg border border-gray-100 p-4"
                 >
                     <summary className="cursor-pointer font-semibold">
-                        {poll.pollTitle}
+                        {poll.title || "Untitled Poll"}
                     </summary>
 
                     <div>
                         <p className="text-foreground mb-2 mt-4">
-                            {poll.pollQuestion}
+                            {poll.question}
                         </p>
                         <p className="text-cards-foreground">
-                            {poll.pollDescription}
+                            {poll.description}
                         </p>
                     </div>
 
                     <div className="text-dark-gray mt-4 flex flex-col gap-2 text-sm">
-                        {poll.pollType === PollTypes.SINGLE &&
-                            poll.pollOptions.map((option) => (
+                        {poll.type === PollType.SINGLE &&
+                            poll.options.map((option) => (
                                 <div
                                     key={option.id}
                                     className="flex items-center"
                                 >
                                     <input
                                         type="radio"
-                                        id={`${poll.pollQuestion}-${option.id}`}
-                                        name={`poll-option-${poll.pollQuestion}`}
-                                        value={option.value}
+                                        id={`${poll.question}-${option.id}`}
+                                        name={`poll-option-${poll.question}`}
+                                        value={option.text}
                                         className="mr-2"
                                     />
                                     <label
-                                        htmlFor={`${poll.pollQuestion}-${option.id}`}
+                                        htmlFor={`${poll.question}-${option.id}`}
                                     >
-                                        {option.label}
+                                        {option.text}
                                     </label>
                                 </div>
                             ))}
-                        {poll.pollType === PollTypes.MULTIPLE &&
-                            poll.pollOptions.map((option) => (
+                        {poll.type === PollType.MULTIPLE &&
+                            poll.options.map((option) => (
                                 <div
                                     key={option.id}
                                     className="flex items-center"
                                 >
                                     <input
                                         type="checkbox"
-                                        id={`${poll.pollQuestion}-${option.id}`}
-                                        name={`poll-option-${poll.pollQuestion}`}
-                                        value={option.value}
+                                        id={`${poll.question}-${option.id}`}
+                                        name={`poll-option-${poll.question}`}
+                                        value={option.text}
                                         className="mr-2"
                                     />
                                     <label
-                                        htmlFor={`${poll.pollQuestion}-${option.id}`}
+                                        htmlFor={`${poll.question}-${option.id}`}
                                     >
-                                        {option.label}
+                                        {option.text}
                                     </label>
                                 </div>
                             ))}
-                        {poll.pollType === PollTypes.OPEN && (
-                            <textarea
-                                rows={4}
-                                className="w-full rounded border p-2"
-                                placeholder="Your answer..."
-                            ></textarea>
-                        )}
                     </div>
                     <div className="text-dark-gray mt-6 flex items-center justify-between text-xs">
-                        <div>3hrs ago</div>
+                        <div>
+                            <p className="text-xs">
+                                {(() => {
+                                    const diff = Date.now() - new Date(poll.createdAt).getTime();
+                                    const seconds = Math.floor(diff / 1000);
+                                    const minutes = Math.floor(seconds / 60);
+                                    const hours = Math.floor(minutes / 60);
+                                    const days = Math.floor(hours / 24);
+
+                                    if (days > 0) return `${days} day${days > 1 ? "s" : ""} ago`;
+                                    if (hours > 0) return `${hours} hour${hours > 1 ? "s" : ""} ago`;
+                                    if (minutes > 0) return `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
+                                    return "just now";
+                                })()}
+                            </p>
+                        </div>
                         <div className="flex items-center gap-4">
                             <button
                                 type="button"
@@ -135,11 +148,10 @@ export const PollList = ({
                             <button
                                 className="h-5 w-5"
                                 onClick={() => {
-                                    const shareableLink = `${window.location.origin}/dashboard/polls/votes/${encodeURIComponent(poll.pollTitle.trim())}`;
+                                    const shareableLink = `${window.location.origin}/vote/poll-${poll.id}`;
                                     navigator.clipboard.writeText(
                                         shareableLink
                                     );
-                                    // alert("Link copied to clipboard!");
                                 }}
                             >
                                 <ShareIcon />
@@ -147,7 +159,7 @@ export const PollList = ({
                             <button
                                 className="block h-5 w-5"
                                 type="button"
-                                onClick={() => handleDeletePoll(index)}
+                                onClick={() => handleDeletePoll(poll.id)}
                             >
                                 {" "}
                                 <DeleteIcon />
