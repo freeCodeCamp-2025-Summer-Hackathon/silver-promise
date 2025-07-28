@@ -151,7 +151,7 @@ export const CreatePollForm: React.FC<CreatePollFormProps> = ({
                                                     onClick={
                                                         handleUpdateAndExitEditMode
                                                     }
-                                                    className="text-blue-500 cursor-pointer"
+                                                    className="cursor-pointer text-blue-500"
                                                 >
                                                     Update
                                                 </button>
@@ -166,7 +166,7 @@ export const CreatePollForm: React.FC<CreatePollFormProps> = ({
                                                             option
                                                         )
                                                     }
-                                                    className="text-blue-500 dark:text-lime-600 cursor-pointer"
+                                                    className="cursor-pointer text-blue-500 dark:text-lime-600"
                                                     title="Edit Option"
                                                 >
                                                     <EditIcon />
@@ -193,7 +193,7 @@ export const CreatePollForm: React.FC<CreatePollFormProps> = ({
                                 <button
                                     type="button"
                                     onClick={handleAddSingleChoiceOption}
-                                    className="mt-2 text-blue-500 cursor-pointer"
+                                    className="mt-2 cursor-pointer text-blue-500"
                                 >
                                     Add options
                                 </button>
@@ -238,7 +238,7 @@ export const CreatePollForm: React.FC<CreatePollFormProps> = ({
                                                     onClick={
                                                         handleUpdateAndExitEditMode
                                                     }
-                                                    className="text-blue-500 cursor-pointer"
+                                                    className="cursor-pointer text-blue-500"
                                                 >
                                                     Update
                                                 </button>
@@ -253,7 +253,7 @@ export const CreatePollForm: React.FC<CreatePollFormProps> = ({
                                                             option
                                                         )
                                                     }
-                                                    className="text-blue-500 dark:text-lime-600 cursor-pointer"
+                                                    className="cursor-pointer text-blue-500 dark:text-lime-600"
                                                     title="Edit Option"
                                                 >
                                                     <EditIcon />
@@ -280,7 +280,7 @@ export const CreatePollForm: React.FC<CreatePollFormProps> = ({
                                 <button
                                     type="button"
                                     onClick={handleAddMultiChoiceOption}
-                                    className="mt-2 text-blue-500 cursor-pointer"
+                                    className="mt-2 cursor-pointer text-blue-500"
                                 >
                                     Add options
                                 </button>
