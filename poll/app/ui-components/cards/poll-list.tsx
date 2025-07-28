@@ -78,7 +78,7 @@ export const PollList = ({
                         </p>
                     </div>
 
-                    <div className="text-dark-gray mt-4 flex flex-col gap-2 text-sm">
+                    <div className="text-foreground mt-4 flex flex-col gap-2 text-sm">
                         {poll.type === PollType.SINGLE &&
                             poll.options.map((option) => (
                                 <div
@@ -90,6 +90,7 @@ export const PollList = ({
                                         id={`${poll.question}-${option.id}`}
                                         name={`poll-option-${poll.question}`}
                                         value={option.text}
+                                        disabled
                                         className="mr-2"
                                     />
                                     <label
@@ -110,6 +111,7 @@ export const PollList = ({
                                         id={`${poll.question}-${option.id}`}
                                         name={`poll-option-${poll.question}`}
                                         value={option.text}
+                                        disabled
                                         className="mr-2"
                                     />
                                     <label
@@ -120,7 +122,7 @@ export const PollList = ({
                                 </div>
                             ))}
                     </div>
-                    <div className="text-dark-gray mt-6 flex items-center justify-between text-xs">
+                    <div className="text-cards-foreground mt-6 flex items-center justify-between text-xs">
                         <div>
                             <p className="text-xs">
                                 {(() => {
@@ -145,26 +147,29 @@ export const PollList = ({
                         <div className="flex items-center gap-4">
                             <button
                                 type="button"
-                                className="h-5 w-5"
+                                title="Edit Poll"
+                                className="h-5 w-5 cursor-pointer text-blue-500 dark:text-lime-600"
                                 onClick={() => handleUpdateWhenClick(index)}
                             >
                                 <EditIcon />
                             </button>
                             <button
-                                className="h-5 w-5"
+                                className="h-5 w-5 cursor-pointer"
                                 onClick={() => {
                                     const shareableLink = `${window.location.origin}/vote/poll-${poll.id}`;
                                     navigator.clipboard.writeText(
                                         shareableLink
                                     );
                                 }}
+                                title="Share Poll"
                             >
                                 <ShareIcon />
                             </button>
                             <button
-                                className="block h-5 w-5"
+                                className="block h-5 w-5 cursor-pointer text-red-500"
                                 type="button"
                                 onClick={() => handleDeletePoll(poll.id)}
+                                title="Delete Poll"
                             >
                                 {" "}
                                 <DeleteIcon />
