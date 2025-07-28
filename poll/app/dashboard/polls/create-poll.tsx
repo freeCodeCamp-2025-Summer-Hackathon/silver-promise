@@ -272,7 +272,7 @@ export const CreatePoll = () => {
             (pollTypeValue === PollType.MULTIPLE &&
                 multipleChoiceOptions.length === 0)
         ) {
-            alert("Please fill in all required fields.");
+            alert("Please fill in the question and at least " + (pollTypeValue === PollType.SINGLE ? "2 options" : "1 option"));
             return;
         }
 
