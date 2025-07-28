@@ -110,9 +110,9 @@ export function PollDetailPageWithPollId({ pollId }: { pollId: number }) {
 
                     {/* Poll Container */}
                     {hasVoted ? (
-                        <div className="text-center text-lg font-semibold bg-table-background rounded-xl p-6 shadow">
+                        <div className="bg-table-background rounded-xl p-6 text-center text-lg font-semibold shadow">
                             Thank you for voting!
-                            <p className="text-sm text-cards-foreground">
+                            <p className="text-cards-foreground text-sm">
                                 Your vote has been recorded.
                             </p>
                         </div>

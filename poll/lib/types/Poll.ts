@@ -16,7 +16,6 @@ export interface PollEditingPayload {
     type: PollType;
 }
 
-
 export interface Poll extends PollResult {
     status: string;
     createdAt: Date;

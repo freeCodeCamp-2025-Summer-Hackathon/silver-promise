@@ -4,7 +4,8 @@ import { SideNavbar } from "../ui-components/navbars/side-navbar";
 
 export const metadata: Metadata = {
     title: "Poll Palls - Dashboard",
-    description: "Manage your polls and settings. Create and vote on polls easily.",
+    description:
+        "Manage your polls and settings. Create and vote on polls easily.",
     keywords: ["polls", "dashboard", "settings", "create poll", "vote"],
 };
 

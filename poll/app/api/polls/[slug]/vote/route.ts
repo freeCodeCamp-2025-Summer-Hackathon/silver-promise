@@ -33,8 +33,11 @@ export async function POST(request: Request) {
 
         optionIds = optionIds || [optionId];
 
-
-        const vote = await PollRepository.voteOnPoll(pollId, undefined, optionIds);
+        const vote = await PollRepository.voteOnPoll(
+            pollId,
+            undefined,
+            optionIds
+        );
         if (!vote) {
             return NextResponse.json({ error: "Bad Request" }, { status: 400 });
         }

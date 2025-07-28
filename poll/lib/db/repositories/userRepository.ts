@@ -5,9 +5,11 @@ export class UserRepository {
     static async findByEmailOrUsername(
         identifier: string
     ): Promise<UserWithPassword | null> {
-        return await UserModel.findOne({
-            $or: [{ email: identifier }, { username: identifier }],
-        }) || null;
+        return (
+            (await UserModel.findOne({
+                $or: [{ email: identifier }, { username: identifier }],
+            })) || null
+        );
     }
 
     static async findByEmail(email: string): Promise<UserWithPassword | null> {
@@ -15,7 +17,7 @@ export class UserRepository {
             return null;
         }
 
-        return await UserModel.findOne({ email }) || null;
+        return (await UserModel.findOne({ email })) || null;
     }
 
     static async findByUsername(
@@ -25,7 +27,7 @@ export class UserRepository {
             return null;
         }
 
-        return await UserModel.findOne({ username }) || null;
+        return (await UserModel.findOne({ username })) || null;
     }
 
     static async create(userData: {
@@ -34,7 +36,7 @@ export class UserRepository {
         country: string;
         passwordHash: string;
     }): Promise<UserWithPassword | null> {
-        const id = await UserModel.countDocuments() + 1; // Simple ID generation
+        const id = (await UserModel.countDocuments()) + 1; // Simple ID generation
         const newUser = new UserModel({ ...userData, id });
         await newUser.save();
         return newUser.toObject() as UserWithPassword;

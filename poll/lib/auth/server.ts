@@ -12,4 +12,3 @@ export function getUserFromRequest(request: Request) {
         return null;
     }
 }
-
